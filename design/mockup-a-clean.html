@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup A — Clean Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --ring: rgba(255,255,255,0.10);
+  --cf: #d95926;
+  --mr: #199e70;
+  --forge: #5b8fd6;
+  --fabric: #b0872c;
+  --neo: #d95926;
+  --quilt: #9c7bd0;
+  --accent: #199e70;
+}
+* { margin: 0; box-sizing: border-box; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Instrument Sans", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 0 24px 64px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+
+header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 28px 0 22px; border-bottom: 1px solid var(--grid); margin-bottom: 28px;
+}
+.brand { display: flex; align-items: baseline; gap: 14px; }
+h1 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.brand .sub { color: var(--muted); font-size: 13px; }
+.updated {
+  font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-2);
+  border: 1px solid var(--ring); border-radius: 99px; padding: 4px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.updated::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+.tile {
+  background: var(--surface); border: 1px solid var(--ring); border-radius: 10px;
+  padding: 16px 18px 14px;
+}
+.tile .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.tile .v { font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.tile .d { color: var(--ink-2); font-size: 12px; margin-top: 4px; }
+.tile .d .up { color: #0ca30c; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--ring); border-radius: 10px;
+  padding: 20px 22px 18px; margin-bottom: 12px;
+}
+.card h2 { font-size: 14px; font-weight: 600; }
+.card .note { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.legend { display: flex; gap: 16px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; }
+.legend span { display: flex; align-items: center; gap: 6px; }
+.legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.seg {
+  display: inline-flex; border: 1px solid var(--ring); border-radius: 7px; overflow: hidden;
+  font-size: 12px;
+}
+.seg button {
+  all: unset; padding: 5px 14px; color: var(--muted); cursor: pointer; font-family: inherit;
+}
+.seg button.on { background: rgba(255,255,255,0.07); color: var(--ink); }
+
+.chart { display: grid; grid-template-columns: repeat(8, 1fr); gap: 18px; align-items: end; height: 240px; padding-top: 8px; }
+.col { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 0; position: relative; }
+.col .val {
+  font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-2);
+  text-align: center; margin-bottom: 6px;
+}
+.col .bar { width: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; flex: none; }
+.col .b { border-radius: 4px 4px 0 0; }
+.col .b + .b { border-radius: 0; }
+.xaxis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 18px; border-top: 1px solid var(--baseline); margin-top: 10px; padding-top: 8px; }
+.xaxis span { text-align: center; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.hbars { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.hrow { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: center; }
+.hrow .lbl { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); text-align: right; }
+.hrow .track { display: flex; gap: 2px; height: 16px; }
+.hrow .track i { border-radius: 0; }
+.hrow .track i:first-child { border-radius: 3px 0 0 3px; }
+.hrow .track i:last-child { border-radius: 0 3px 3px 0; }
+
+.spark { width: 100%; height: 190px; margin-top: 4px; }
+.footer-note { color: var(--muted); font-size: 12px; margin-top: 20px; }
+.footer-note a { color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">
+    <h1>MC Mod Popularity</h1>
+    <span class="sub">CurseForge + Modrinth, refreshed daily</span>
+  </div>
+  <div class="updated">UPDATED AUG 2, 2026 · 06:00 UTC</div>
+</header>
+
+<div class="tiles">
+  <div class="tile"><div class="k">Projects tracked</div><div class="v">214,380</div><div class="d"><span class="up">▲ 312</span> since yesterday</div></div>
+  <div class="tile"><div class="k">Total downloads</div><div class="v">21.6B</div><div class="d"><span class="up">▲ 0.4%</span> this week</div></div>
+  <div class="tile"><div class="k">Top version</div><div class="v">1.21</div><div class="d">41,700 mods · 3.4B downloads</div></div>
+  <div class="tile"><div class="k">Top loader</div><div class="v">Fabric</div><div class="d">35% of new-version mods</div></div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div>
+      <h2>Mods per Minecraft version</h2>
+      <div class="note">Grouped by version family — click a bar to drill into patch versions</div>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <div class="legend">
+        <span><i style="background:var(--cf)"></i>CurseForge</span>
+        <span><i style="background:var(--mr)"></i>Modrinth</span>
+      </div>
+      <div class="seg"><button class="on">Mods</button><button>Modpacks</button><button>Downloads</button></div>
+    </div>
+  </div>
+  <div class="chart">
+    <div class="col"><div class="val">18.2k</div><div class="bar" style="height:44%"><div class="b" style="background:var(--mr); height:8%"></div><div class="b" style="background:var(--cf); height:92%"></div></div></div>
+    <div class="col"><div class="val">9.4k</div><div class="bar" style="height:23%"><div class="b" style="background:var(--mr); height:9%"></div><div class="b" style="background:var(--cf); height:91%"></div></div></div>
+    <div class="col"><div class="val">32.4k</div><div class="bar" style="height:78%"><div class="b" style="background:var(--mr); height:8%"></div><div class="b" style="background:var(--cf); height:92%"></div></div></div>
+    <div class="col"><div class="val">28.1k</div><div class="bar" style="height:67%"><div class="b" style="background:var(--mr); height:20%"></div><div class="b" style="background:var(--cf); height:80%"></div></div></div>
+    <div class="col"><div class="val">21.9k</div><div class="bar" style="height:53%"><div class="b" style="background:var(--mr); height:27%"></div><div class="b" style="background:var(--cf); height:73%"></div></div></div>
+    <div class="col"><div class="val">26.3k</div><div class="bar" style="height:63%"><div class="b" style="background:var(--mr); height:34%"></div><div class="b" style="background:var(--cf); height:66%"></div></div></div>
+    <div class="col"><div class="val">38.2k</div><div class="bar" style="height:92%"><div class="b" style="background:var(--mr); height:38%"></div><div class="b" style="background:var(--cf); height:62%"></div></div></div>
+    <div class="col"><div class="val">41.7k</div><div class="bar" style="height:100%"><div class="b" style="background:var(--mr); height:42%"></div><div class="b" style="background:var(--cf); height:58%"></div></div></div>
+  </div>
+  <div class="xaxis"><span>1.7</span><span>1.8</span><span>1.12</span><span>1.16</span><span>1.18</span><span>1.19</span><span>1.20</span><span>1.21</span></div>
+</div>
+
+<div class="two">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>Loader share by version</h2>
+        <div class="note">Share of mods per family</div>
+      </div>
+    </div>
+    <div class="legend" style="margin-bottom:16px">
+      <span><i style="background:var(--fabric)"></i>Fabric</span>
+      <span><i style="background:var(--forge)"></i>Forge</span>
+      <span><i style="background:var(--neo)"></i>NeoForge</span>
+      <span><i style="background:var(--quilt)"></i>Quilt</span>
+    </div>
+    <div class="hbars">
+      <div class="hrow"><span class="lbl">1.12</span><div class="track"><i style="background:var(--forge); width:98%"></i><i style="background:var(--fabric); width:2%"></i></div></div>
+      <div class="hrow"><span class="lbl">1.16</span><div class="track"><i style="background:var(--fabric); width:30%"></i><i style="background:var(--forge); width:68%"></i><i style="background:var(--quilt); width:2%"></i></div></div>
+      <div class="hrow"><span class="lbl">1.18</span><div class="track"><i style="background:var(--fabric); width:42%"></i><i style="background:var(--forge); width:54%"></i><i style="background:var(--quilt); width:4%"></i></div></div>
+      <div class="hrow"><span class="lbl">1.19</span><div class="track"><i style="background:var(--fabric); width:49%"></i><i style="background:var(--forge); width:44%"></i><i style="background:var(--quilt); width:7%"></i></div></div>
+      <div class="hrow"><span class="lbl">1.20</span><div class="track"><i style="background:var(--fabric); width:44%"></i><i style="background:var(--forge); width:30%"></i><i style="background:var(--neo); width:21%"></i><i style="background:var(--quilt); width:5%"></i></div></div>
+      <div class="hrow"><span class="lbl">1.21</span><div class="track"><i style="background:var(--fabric); width:47%"></i><i style="background:var(--forge); width:12%"></i><i style="background:var(--neo); width:39%"></i><i style="background:var(--quilt); width:2%"></i></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>Version share over time</h2>
+        <div class="note">Share of daily downloads, last 90 days</div>
+      </div>
+    </div>
+    <div class="legend" style="margin-bottom:6px">
+      <span><i style="background:var(--mr)"></i>1.21</span>
+      <span><i style="background:var(--forge)"></i>1.20</span>
+      <span><i style="background:var(--fabric)"></i>1.19</span>
+    </div>
+    <svg class="spark" viewBox="0 0 460 190" preserveAspectRatio="none">
+      <line x1="0" y1="47"  x2="460" y2="47"  stroke="#2c2c2a" stroke-width="1"/>
+      <line x1="0" y1="94"  x2="460" y2="94"  stroke="#2c2c2a" stroke-width="1"/>
+      <line x1="0" y1="141" x2="460" y2="141" stroke="#2c2c2a" stroke-width="1"/>
+      <line x1="0" y1="188" x2="460" y2="188" stroke="#383835" stroke-width="1"/>
+      <polyline fill="none" stroke="#199e70" stroke-width="2" points="0,120 60,112 120,100 180,92 240,80 300,66 360,52 420,40 460,34"/>
+      <polyline fill="none" stroke="#5b8fd6" stroke-width="2" points="0,58 60,62 120,70 180,74 240,84 300,92 360,100 420,108 460,112"/>
+      <polyline fill="none" stroke="#b0872c" stroke-width="2" points="0,130 60,133 120,136 180,140 240,146 300,150 360,154 420,158 460,160"/>
+      <circle cx="460" cy="34" r="3.5" fill="#199e70" stroke="#1a1a19" stroke-width="2"/>
+      <circle cx="460" cy="112" r="3.5" fill="#5b8fd6" stroke="#1a1a19" stroke-width="2"/>
+      <circle cx="460" cy="160" r="3.5" fill="#b0872c" stroke="#1a1a19" stroke-width="2"/>
+    </svg>
+  </div>
+</div>
+
+<p class="footer-note">Download totals sum the top 10,000 projects per version on each platform. Cross-posted projects are counted once per platform. Data: CurseForge &amp; Modrinth APIs.</p>
+
+</div>
+</body>
+</html>
