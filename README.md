@@ -1,43 +1,25 @@
-# Astro Starter Kit: Minimal
+# MC Mod Popularity
+
+Charts the most popular Minecraft versions and mod loaders, measured by
+mod/modpack counts and download totals on CurseForge and Modrinth.
+
+Static Astro + React site on GitHub Pages; a GitHub Action refreshes the data
+daily and only commits when the numbers meaningfully change (>= 1%).
+
+## Development
 
 ```sh
-npm create astro@latest -- --template minimal
+pnpm install
+pnpm fetch-data   # needs CURSEFORGE_API_KEY in .env
+pnpm dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Data notes
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Counts come from the platforms' search APIs. CurseForge caps search results
+  at 10,000, so larger counts are reconstructed from per-loader partitions and
+  marked approximate (~).
+- Download totals sum the top 10k mods and top 5k modpacks per platform by
+  downloads; the long tail contributes little.
+- A mod counts toward every Minecraft version it supports, and cross-posted
+  projects count once per platform.

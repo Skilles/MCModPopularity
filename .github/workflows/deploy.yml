@@ -1,0 +1,73 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "0 6 * * *" # daily data refresh
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Scheduled/manual runs refresh the data; the script only writes files
+      # when a metric moved >= 1%, so a clean tree means nothing to publish.
+      - name: Refresh data
+        if: github.event_name != 'push'
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: pnpm fetch-data
+
+      - name: Commit updated data
+        id: data
+        if: github.event_name != 'push'
+        run: |
+          if [[ -n "$(git status --porcelain data)" ]]; then
+            git config user.name "Bilal Madi"
+            git config user.email "bilal@bilalmadi.com"
+            git add data
+            git commit -m "Update data $(date -u +%F)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        if: github.event_name == 'push' || steps.data.outputs.changed == 'true'
+        run: pnpm build
+
+      - name: Upload site
+        if: github.event_name == 'push' || steps.data.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: github.event_name == 'push' || steps.data.outputs.changed == 'true'
+        uses: actions/deploy-pages@v4
