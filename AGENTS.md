@@ -24,12 +24,16 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
   family have their full version history fetched, and a mod is "active" for a
   version only if it published a file for that version in the last 90 days
   (CurseForge has no date filter).
-- Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 30% +
-  mod count 25% + activity 25% + recency 20% (user-approved weights).
-  Version+loader API filters match at project level, so impossible combos
-  (e.g. NeoForge on 1.16) are clamped by loader launch dates in
-  `familyLoaderCounts`. The "Top loader" tile weights loader counts by each
-  family's popularity score (`weightedTopLoader`).
+- Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 35% +
+  mod count 30% + activity 25% + recency 10% (user-approved weights; recency
+  was toned down from 20%). Version+loader API filters match at project
+  level, so impossible combos (e.g. NeoForge on 1.16) are clamped by loader
+  launch dates in `familyLoaderCounts`. The "Top loader" tile weights loader
+  counts by popularity score x exp(-age/4yr) so recent versions dominate but
+  popular legacy versions still contribute (`weightedTopLoader`).
+- User-facing copy (tooltips, notes, tiles) stays plain-language: no
+  implementation jargon like "sweeps", "calibration factors", or
+  "project-level filtering".
 - Version "families" group patch versions (1.20.1 -> 1.20); works for both the
   1.x and date-based (26.1) version schemes. Sorted by release date, not by
   parsing version numbers.

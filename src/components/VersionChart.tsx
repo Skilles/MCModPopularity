@@ -69,8 +69,8 @@ export default function VersionChart({ families, generatedAt }: {
             {family
               ? <button className="back-btn" onClick={() => setDrill(null)}>← All versions</button>
               : isScore
-                ? 'Blends downloads, mod count, maintenance activity, and version age — click a bar for patch versions'
-                : 'Grouped by version family — click a bar to drill into patch versions'}
+                ? 'How popular each version is with modders today — click a bar to see its patch versions'
+                : 'Grouped by version family — click a bar to see its patch versions'}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>

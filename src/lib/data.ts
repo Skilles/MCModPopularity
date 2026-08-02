@@ -66,11 +66,12 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
 // ---------------------------------------------------------------- popularity
 
 /**
- * 0-100 popularity index. Balanced blend agreed with the user:
- * downloads 30% + mod count 25% + maintenance activity 25% + recency 20%.
- * Downloads/counts are log-scaled and normalized within the charted set;
- * activity is the share of Modrinth mods updated in the last 90 days
- * (the only platform with a date filter); recency decays with version age.
+ * 0-100 popularity index. Blend agreed with the user (recency toned down
+ * from the original 20%): downloads 35% + mod count 30% + maintenance
+ * activity 25% + recency 10%. Downloads/counts are log-scaled and
+ * normalized within the charted set; activity is the file-accurate sampled
+ * share of mods recently updated for that version; recency decays with
+ * version age.
  */
 export interface ScoreParts {
   downloads: number;
@@ -106,7 +107,7 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
     const score =
-      100 * (0.3 * (logD[i] / maxD) + 0.25 * (logC[i] / maxC) + 0.25 * Math.min(activeShare, 1) + 0.2 * recency);
+      100 * (0.35 * (logD[i] / maxD) + 0.3 * (logC[i] / maxC) + 0.25 * Math.min(activeShare, 1) + 0.1 * recency);
     return {
       name: r.name,
       score: Math.round(score),
@@ -152,15 +153,22 @@ export function familyLoaderCounts(f: FamilyEntry): Record<Loader, number> {
   return out;
 }
 
-/** Top loader across all versions, weighting each family's loader counts by
- *  that family's popularity score. */
+/**
+ * Top loader across recent and popular versions (per the user: the last ~2
+ * years of versions plus popular older ones like 1.12-1.20, with newer
+ * versions counting more). Each family's loader counts are weighted by its
+ * popularity score times a recency decay, so recent families dominate and
+ * popular legacy families still contribute proportionally.
+ */
 export function weightedTopLoader(families: FamilyEntry[], generatedAt: string) {
   const scores = new Map(
     popularityScores(families.map(familyScoreInput), generatedAt).map((s) => [s.name, s.score]),
   );
+  const now = new Date(generatedAt).getTime();
   const weighted = Object.fromEntries(LOADERS.map((l) => [l, 0])) as Record<Loader, number>;
   for (const f of families) {
-    const w = scores.get(f.key) ?? 0;
+    const ageYears = Math.max(0, (now - new Date(f.date).getTime()) / (365.25 * 86_400_000));
+    const w = (scores.get(f.key) ?? 0) * Math.exp(-ageYears / 4);
     const counts = familyLoaderCounts(f);
     for (const l of LOADERS) weighted[l] += w * counts[l];
   }

@@ -46,7 +46,7 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
     <div class="tile" style="--tile-accent: var(--quilt)">
       <div class="k">Top loader</div>
       <div class="v">{loaderNames[topLoader.loader]}</div>
-      <div class="d">{Math.round(topLoader.share * 100)}% share, weighted by version popularity</div>
+      <div class="d">{Math.round(topLoader.share * 100)}% share across recent & popular versions</div>
     </div>
   </div>
 
@@ -61,11 +61,9 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
           <h2 style="display: flex; align-items: center">
             Loader share by version
             <InfoTip>
-              Counts come from the platforms' version + loader search filters, which match
-              per project — so a mod shipping several loaders counts toward each of them.
-              Combinations that predate a loader's first supported version (e.g. NeoForge
-              before 1.20, Quilt before 1.18, Fabric before 1.14) are filtered out, since
-              matches there are artifacts of project-level filtering.
+              Many mods work with more than one loader — those count toward each loader
+              they support. Loaders only appear next to Minecraft versions they actually
+              existed for, so some combinations are left out on purpose.
             </InfoTip>
           </h2>
           <div class="note">Share of mods per family, newest first</div>
@@ -79,10 +77,9 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
           <h2 style="display: flex; align-items: center">
             CurseForge vs Modrinth
             <InfoTip>
-              Download shares come from download sweeps of both platforms. Mod and modpack
-              counts above CurseForge's 10,000-result search cap are estimated by summing
-              per-category counts and dividing by a calibration factor (~{data.cfOverlapFactor.mods})
-              measured on versions where exact totals are available, and are marked ~.
+              Compares how much of each version's modding happens on each platform.
+              CurseForge doesn't report exact numbers above 10,000, so larger counts
+              are careful estimates and marked with ~.
             </InfoTip>
           </h2>
           <div class="note">Platform share per family, newest first</div>

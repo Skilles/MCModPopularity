@@ -47,7 +47,7 @@ export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
         ))}
       </div>
       <div className="note" style={{ marginTop: 14, minHeight: 20 }}>
-        {tip ?? 'Hover a segment for exact numbers. Mods shipping several loaders count toward each.'}
+        {tip ?? 'Hover a segment for exact numbers. A mod can count toward several loaders.'}
       </div>
     </div>
   );
