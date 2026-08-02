@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  generatedAt: string;
+}
+const { title, generatedAt } = Astro.props;
+const updated = new Date(generatedAt).toLocaleDateString('en-US', {
+  month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+}).toUpperCase();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="The most popular Minecraft versions and mod loaders, measured by mod and modpack counts and downloads on CurseForge and Modrinth. Updated daily." />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+    <script is:inline>
+      const theme = localStorage.getItem('theme')
+        ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            {Array.from({ length: 16 }).map(() => <i></i>)}
+          </div>
+          <h1>MC <span class="accent">Mod Popularity</span></h1>
+          <span class="sub">CurseForge + Modrinth, refreshed daily</span>
+        </div>
+        <div class="header-right">
+          <div class="updated">UPDATED {updated}</div>
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          </button>
+        </div>
+      </header>
+      <slot />
+    </div>
+    <script>
+      document.querySelector('.theme-toggle')!.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('theme', next);
+      });
+    </script>
+  </body>
+</html>
