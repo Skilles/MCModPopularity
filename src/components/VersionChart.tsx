@@ -180,7 +180,7 @@ function Tip({ active, payload, label, isScore, metric }: {
       </div>
     );
   }
-  const suffix = row.approx ? ' (approx.)' : '';
+  const suffix = row.approx ? ' (est.)' : '';
   return (
     <div className="chart-tip">
       <div className="t">{label}</div>

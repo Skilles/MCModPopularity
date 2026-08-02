@@ -35,8 +35,13 @@ const SWEEP_MODPACKS = 5_000;
  *  global top-N misses. Projects are deduped by id before attribution. */
 const FAMILY_SWEEP_MODS = 2_000;
 const FAMILY_SWEEP_MODPACKS = 500;
-/** Window for the "actively maintained" metric (Modrinth only). */
+/** Window for the "actively maintained" metric. */
 const ACTIVE_DAYS = 90;
+/** Top Modrinth mods per family whose full file history is fetched for the
+ *  file-accurate activity metric (deduped across families before fetching). */
+const ACTIVITY_SAMPLE = 150;
+/** How many exact (<10k) slices to measure the category-overlap factor on. */
+const CALIBRATION_SAMPLES = 3;
 
 const CF_LOADERS = { forge: 1, fabric: 4, quilt: 5, neoforge: 6 } as const;
 type Loader = keyof typeof CF_LOADERS;
@@ -92,11 +97,12 @@ const cf = makeClient({ "x-api-key": CF_KEY, "Accept": "application/json" }, 120
 
 // ------------------------------------------------------------------- shapes
 
+interface Activity { sampled: number; active: number }
 interface PlatformStats {
   mods: number;
   modpacks: number;
-  /** True when a CurseForge count hit the 10k result cap and was
-   *  reconstructed from per-loader partitions (lower bound). */
+  /** True when a CurseForge count exceeded the 10k cap and was estimated
+   *  from category partitions calibrated against exact slices. */
   modsApprox?: boolean;
   /** Downloads summed over the deduped sweeps, mods + modpacks. */
   downloads: number;
@@ -106,8 +112,8 @@ interface FamilyEntry {
   /** Release date of the newest version in the family (for sorting). */
   date: string;
   cf: PlatformStats & { loaders: Record<Loader, number> };
-  mr: PlatformStats & { loaders: Record<Loader, number>; active90: number };
-  versions: { v: string; date: string; cf: PlatformStats; mr: PlatformStats & { active90: number } }[];
+  mr: PlatformStats & { loaders: Record<Loader, number>; activity: Activity };
+  versions: { v: string; date: string; cf: PlatformStats; mr: PlatformStats & { activity: Activity } }[];
 }
 
 /** "1.20.1" -> "1.20", "26.1.2" -> "26.1", "1.21" -> "1.21" */
@@ -138,6 +144,7 @@ function attribute(projects: Map<string | number, SweptProject>, releaseSet: Set
 interface MrTag { version: string; version_type: string; date: string }
 interface MrSearch { total_hits: number; hits: MrHit[] }
 interface MrHit { project_id: string; downloads: number; versions: string[] }
+interface MrVersionFile { game_versions: string[]; date_published: string }
 
 const mrCount = async (facets: string[][]) => {
   const q = encodeURIComponent(JSON.stringify(facets));
@@ -150,6 +157,7 @@ async function mrSweepInto(
   out: Map<string | number, SweptProject>,
   facets: string[][],
   top: number,
+  orderedIds?: string[],
 ) {
   const q = encodeURIComponent(JSON.stringify(facets));
   for (let offset = 0; offset < top; offset += 100) {
@@ -159,8 +167,37 @@ async function mrSweepInto(
     if (!page || page.hits.length === 0) break;
     for (const hit of page.hits) {
       out.set(hit.project_id, { downloads: hit.downloads, versions: new Set(hit.versions) });
+      orderedIds?.push(hit.project_id);
     }
   }
+}
+
+/**
+ * File-accurate activity: which release versions did each sampled project
+ * publish a file for within the ACTIVE_DAYS window, and which does it
+ * support at all. One request per unique project.
+ */
+async function fetchProjectActivity(ids: Set<string>, activeSinceIso: string) {
+  const supported = new Map<string, Set<string>>();
+  const active = new Map<string, Set<string>>();
+  let done = 0;
+  for (const id of ids) {
+    const files = await mr<MrVersionFile[]>(`${MODRINTH}/project/${id}/version`).catch(() => null);
+    done++;
+    if (done % 500 === 0) console.log(`  activity sample: ${done}/${ids.size} projects`);
+    if (!files) continue;
+    const sup = new Set<string>();
+    const act = new Set<string>();
+    for (const f of files) {
+      for (const v of f.game_versions) {
+        sup.add(v);
+        if (f.date_published >= activeSinceIso) act.add(v);
+      }
+    }
+    supported.set(id, sup);
+    active.set(id, act);
+  }
+  return { supported, active };
 }
 
 // ---------------------------------------------------------------- curseforge
@@ -168,6 +205,7 @@ async function mrSweepInto(
 interface CfSearch { data: CfMod[]; pagination: { totalCount: number } }
 interface CfMod { id: number; downloadCount: number; latestFilesIndexes: { gameVersion: string }[] }
 interface CfVersionType { id: number; name: string }
+interface CfCategory { id: number; name: string }
 
 const cfSearch = (params: Record<string, string | number>) => {
   const q = new URLSearchParams({ gameId: String(MC_GAME_ID) });
@@ -177,19 +215,65 @@ const cfSearch = (params: Record<string, string | number>) => {
 const cfCount = async (params: Record<string, string | number>) =>
   (await cfSearch({ ...params, pageSize: 1 })).pagination.totalCount;
 
-/**
- * Exact when under the 10k cap; otherwise the sum of per-loader counts
- * (each itself capped), which undercounts unpartitionable overflow but
- * beats reporting a flat 10,000.
- */
-async function cfCountUncapped(params: Record<string, string | number>) {
-  const total = await cfCount(params);
-  if (total < CF_CAP) return { count: total, approx: false };
+/** Per-class category ids and the measured category-overlap factor
+ *  (mods carry ~2.3 categories on average, so partition sums overcount). */
+const cfCategories = new Map<number, number[]>();
+const cfOverlapFactor = new Map<number, number>();
+
+async function cfLoadCategories(classId: number) {
+  const cats = await cf<{ data: CfCategory[] }>(
+    `${CURSEFORGE}/categories?gameId=${MC_GAME_ID}&classId=${classId}`,
+  );
+  cfCategories.set(classId, cats.data.map((c) => c.id));
+}
+
+async function cfCategorySum(params: Record<string, string | number>, classId: number) {
   let sum = 0;
-  for (const id of Object.values(CF_LOADERS)) {
-    sum += await cfCount({ ...params, modLoaderType: id });
+  for (const catId of cfCategories.get(classId)!) {
+    let n = await cfCount({ ...params, categoryId: catId });
+    if (n >= CF_CAP && !("modLoaderType" in params)) {
+      // rare: a single category over 10k — sub-partition by loader
+      n = 0;
+      for (const id of Object.values(CF_LOADERS)) {
+        n += Math.min(await cfCount({ ...params, categoryId: catId, modLoaderType: id }), CF_CAP);
+      }
+    }
+    sum += Math.min(n, CF_CAP);
   }
-  return { count: Math.max(sum, CF_CAP), approx: true };
+  return sum;
+}
+
+/**
+ * Measure the category-overlap factor per class on slices with exact totals:
+ * factor = (sum of per-category counts) / (true total). Applied to estimate
+ * capped counts from their category sums.
+ */
+async function cfCalibrate(classId: number, versions: string[]) {
+  const factors: number[] = [];
+  for (const v of versions) {
+    if (factors.length >= CALIBRATION_SAMPLES) break;
+    const exact = await cfCount({ classId, gameVersion: v });
+    if (exact < 500 || exact >= CF_CAP * 0.95) continue;
+    const sum = await cfCategorySum({ classId, gameVersion: v }, classId);
+    if (sum > 0) factors.push(sum / exact);
+  }
+  const factor = factors.length
+    ? factors.reduce((a, b) => a + b, 0) / factors.length
+    : 2.3; // fallback near the measured typical value
+  cfOverlapFactor.set(classId, factor);
+  console.log(`  class ${classId} category-overlap factor: ${factor.toFixed(2)} (${factors.length} samples)`);
+}
+
+/**
+ * Exact when under the 10k cap; otherwise estimated from category-partition
+ * sums divided by the measured overlap factor.
+ */
+async function cfCountUncapped(params: Record<string, string | number>, classId: number) {
+  const total = await cfCount({ ...params, classId });
+  if (total < CF_CAP) return { count: total, approx: false };
+  const sum = await cfCategorySum({ ...params, classId }, classId);
+  const factor = cfOverlapFactor.get(classId)!;
+  return { count: Math.max(Math.round(sum / factor), CF_CAP), approx: true };
 }
 
 async function cfSweepInto(
@@ -226,7 +310,7 @@ async function main() {
   }
   console.log(`${releases.length} release versions in ${families.size} families`);
 
-  console.log("Fetching CurseForge version types...");
+  console.log("Fetching CurseForge version types and categories...");
   const versionTypes = (await cf<{ data: CfVersionType[] }>(
     `${CURSEFORGE}/games/${MC_GAME_ID}/version-types`,
   )).data;
@@ -235,19 +319,31 @@ async function main() {
     const m = vt.name.match(/^Minecraft ([\d.]+)$/);
     if (m) cfTypeId.set(m[1], vt.id);
   }
+  await cfLoadCategories(CLASS_MODS);
+  await cfLoadCategories(CLASS_MODPACKS);
 
-  const activeSince = Math.floor(Date.now() / 1000) - ACTIVE_DAYS * 86_400;
-  const activeFacet = [`modified_timestamp>=${activeSince}`];
+  console.log("Calibrating CurseForge category-overlap factors...");
+  // Spread candidate slices across eras; cfCalibrate keeps the first few
+  // whose exact totals are usable.
+  const calibrationPool = releases.filter((_, i) => i % 4 === 0).map((t) => t.version);
+  await cfCalibrate(CLASS_MODS, calibrationPool);
+  await cfCalibrate(CLASS_MODPACKS, calibrationPool);
+
+  const activeSinceIso = new Date(Date.now() - ACTIVE_DAYS * 86_400_000).toISOString();
 
   console.log("Running download sweeps (global + per-family, deduped by project)...");
   const mrProjects = new Map<string | number, SweptProject>();
   const cfProjects = new Map<string | number, SweptProject>();
+  /** Per family: Modrinth mod ids ordered by downloads (activity sample frame). */
+  const familyTopIds = new Map<string, string[]>();
   const mrSweeps = (async () => {
     await mrSweepInto(mrProjects, [typeFacet("mod")], SWEEP_MODS);
     await mrSweepInto(mrProjects, [typeFacet("modpack")], SWEEP_MODPACKS);
-    for (const [, members] of families) {
+    for (const [key, members] of families) {
       const vf = versionsFacet(members.map((m) => m.version));
-      await mrSweepInto(mrProjects, [typeFacet("mod"), vf], FAMILY_SWEEP_MODS);
+      const ordered: string[] = [];
+      await mrSweepInto(mrProjects, [typeFacet("mod"), vf], FAMILY_SWEEP_MODS, ordered);
+      familyTopIds.set(key, ordered.slice(0, ACTIVITY_SAMPLE));
       await mrSweepInto(mrProjects, [typeFacet("modpack"), vf], FAMILY_SWEEP_MODPACKS);
     }
   })();
@@ -266,12 +362,31 @@ async function main() {
   const cfDl = attribute(cfProjects, releaseSet);
   console.log(`  swept ${cfDl.projects} CurseForge / ${mrDl.projects} Modrinth projects`);
 
+  console.log("Fetching file-level activity for sampled Modrinth mods...");
+  const sampleIds = new Set<string>();
+  for (const ids of familyTopIds.values()) for (const id of ids) sampleIds.add(id);
+  console.log(`  ${sampleIds.size} unique projects across ${familyTopIds.size} family samples`);
+  const activity = await fetchProjectActivity(sampleIds, activeSinceIso);
+
+  function activityFor(versionsOfInterest: string[], sampleFrame: string[]): Activity {
+    let sampled = 0;
+    let active = 0;
+    for (const id of sampleFrame) {
+      const sup = activity.supported.get(id);
+      if (!sup || !versionsOfInterest.some((v) => sup.has(v))) continue;
+      sampled++;
+      const act = activity.active.get(id);
+      if (act && versionsOfInterest.some((v) => act.has(v))) active++;
+    }
+    return { sampled, active };
+  }
+
   console.log("Fetching global project counts...");
   const [mrTotalMods, mrTotalPacks, cfTotalMods, cfTotalPacks] = await Promise.all([
     mrCount([typeFacet("mod")]),
     mrCount([typeFacet("modpack")]),
-    cfCountUncapped({ classId: CLASS_MODS }),
-    cfCountUncapped({ classId: CLASS_MODPACKS }),
+    cfCountUncapped({}, CLASS_MODS),
+    cfCountUncapped({}, CLASS_MODPACKS),
   ]);
 
   console.log("Fetching per-family and per-version counts...");
@@ -282,27 +397,26 @@ async function main() {
     const cfFamilyParams = typeId
       ? { gameVersionTypeId: typeId }
       : { gameVersion: key }; // fallback: exact-tag match undercounts the family
+    const sampleFrame = familyTopIds.get(key) ?? [];
 
-    const [mrModCount, mrPackCount, mrActive, mrLoaders, cfModCount, cfPackCount, cfLoaders] =
+    const [mrModCount, mrPackCount, mrLoaders, cfModCount, cfPackCount, cfLoaders] =
       await Promise.all([
         mrCount([typeFacet("mod"), versionsFacet(vs)]),
         mrCount([typeFacet("modpack"), versionsFacet(vs)]),
-        mrCount([typeFacet("mod"), versionsFacet(vs), activeFacet]),
         Promise.all(LOADERS.map((l) =>
           mrCount([typeFacet("mod"), versionsFacet(vs), [`categories:${l}`]]))),
-        cfCountUncapped({ classId: CLASS_MODS, ...cfFamilyParams }),
-        cfCountUncapped({ classId: CLASS_MODPACKS, ...cfFamilyParams }),
-        Promise.all(LOADERS.map((l) =>
-          cfCount({ classId: CLASS_MODS, ...cfFamilyParams, modLoaderType: CF_LOADERS[l] }))),
+        cfCountUncapped(cfFamilyParams, CLASS_MODS),
+        cfCountUncapped(cfFamilyParams, CLASS_MODPACKS),
+        Promise.all(LOADERS.map(async (l) =>
+          (await cfCountUncapped({ ...cfFamilyParams, modLoaderType: CF_LOADERS[l] }, CLASS_MODS)).count)),
       ]);
 
     const versions = await Promise.all(members.map(async (m) => {
-      const [mrM, mrP, mrA, cfM, cfP] = await Promise.all([
+      const [mrM, mrP, cfM, cfP] = await Promise.all([
         mrCount([typeFacet("mod"), versionsFacet([m.version])]),
         mrCount([typeFacet("modpack"), versionsFacet([m.version])]),
-        mrCount([typeFacet("mod"), versionsFacet([m.version]), activeFacet]),
-        cfCountUncapped({ classId: CLASS_MODS, gameVersion: m.version }),
-        cfCountUncapped({ classId: CLASS_MODPACKS, gameVersion: m.version }),
+        cfCountUncapped({ gameVersion: m.version }, CLASS_MODS),
+        cfCountUncapped({ gameVersion: m.version }, CLASS_MODPACKS),
       ]);
       return {
         v: m.version,
@@ -310,7 +424,7 @@ async function main() {
         mr: {
           mods: mrM,
           modpacks: mrP,
-          active90: mrA,
+          activity: activityFor([m.version], sampleFrame),
           downloads: mrDl.perVersion.get(m.version) ?? 0,
         },
         cf: {
@@ -328,7 +442,7 @@ async function main() {
       mr: {
         mods: mrModCount,
         modpacks: mrPackCount,
-        active90: mrActive,
+        activity: activityFor(vs, sampleFrame),
         downloads: mrDl.perFamily.get(key) ?? 0,
         loaders: Object.fromEntries(LOADERS.map((l, i) => [l, mrLoaders[i]])) as Record<Loader, number>,
       },
@@ -341,7 +455,7 @@ async function main() {
       },
       versions: versions.sort((a, b) => a.date.localeCompare(b.date)),
     });
-    console.log(`  ${key}: cf ${cfModCount.count}${cfModCount.approx ? "~" : ""} mods, mr ${mrModCount} mods, ${mrActive} active`);
+    console.log(`  ${key}: cf ${cfModCount.count}${cfModCount.approx ? "~" : ""} mods, mr ${mrModCount} mods`);
   }
   entries.sort((a, b) => b.date.localeCompare(a.date));
 
@@ -350,6 +464,11 @@ async function main() {
     sweepSize: { mods: SWEEP_MODS, modpacks: SWEEP_MODPACKS },
     sweptProjects: { cf: cfDl.projects, mr: mrDl.projects },
     activeDays: ACTIVE_DAYS,
+    activitySample: ACTIVITY_SAMPLE,
+    cfOverlapFactor: {
+      mods: +cfOverlapFactor.get(CLASS_MODS)!.toFixed(3),
+      modpacks: +cfOverlapFactor.get(CLASS_MODPACKS)!.toFixed(3),
+    },
     totals: {
       cf: {
         mods: cfTotalMods.count,

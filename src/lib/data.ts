@@ -1,6 +1,10 @@
 export const LOADERS = ['fabric', 'forge', 'neoforge', 'quilt'] as const;
 export type Loader = (typeof LOADERS)[number];
 
+export interface Activity {
+  sampled: number;
+  active: number;
+}
 export interface PlatformStats {
   mods: number;
   modpacks: number;
@@ -11,13 +15,13 @@ export interface VersionEntry {
   v: string;
   date: string;
   cf: PlatformStats;
-  mr: PlatformStats & { active90: number };
+  mr: PlatformStats & { activity: Activity };
 }
 export interface FamilyEntry {
   key: string;
   date: string;
   cf: PlatformStats & { loaders: Record<Loader, number> };
-  mr: PlatformStats & { loaders: Record<Loader, number>; active90: number };
+  mr: PlatformStats & { loaders: Record<Loader, number>; activity: Activity };
   versions: VersionEntry[];
 }
 export interface Dataset {
@@ -25,6 +29,8 @@ export interface Dataset {
   sweepSize: { mods: number; modpacks: number };
   sweptProjects: { cf: number; mr: number };
   activeDays: number;
+  activitySample: number;
+  cfOverlapFactor: { mods: number; modpacks: number };
   totals: { cf: PlatformStats; mr: PlatformStats };
   families: FamilyEntry[];
 }
@@ -83,8 +89,7 @@ interface ScoreInput {
   date: string;
   downloads: number;
   mods: number;
-  active90: number;
-  mrMods: number;
+  activity: Activity;
 }
 
 export function popularityScores(rows: ScoreInput[], generatedAt: string): ScoredRow[] {
@@ -94,9 +99,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
   const maxD = Math.max(...logD, 1);
   const maxC = Math.max(...logC, 1);
   return rows.map((r, i) => {
-    // Small Modrinth populations make the activity ratio noisy — floor the
-    // denominator so a 5-mod version can't score 100% activity.
-    const activeShare = r.active90 / Math.max(r.mrMods, 30);
+    // File-accurate sampled share; dampened when the sample is tiny so a
+    // 5-mod version can't score 100% activity.
+    const raw = r.activity.sampled ? r.activity.active / r.activity.sampled : 0;
+    const activeShare = raw * Math.min(1, r.activity.sampled / 30);
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
     const score =
@@ -114,16 +120,14 @@ export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
   date: f.date,
   downloads: total(f, 'downloads'),
   mods: total(f, 'mods'),
-  active90: f.mr.active90,
-  mrMods: f.mr.mods,
+  activity: f.mr.activity,
 });
 export const versionScoreInput = (v: VersionEntry): ScoreInput => ({
   name: v.v,
   date: v.date,
   downloads: v.cf.downloads + v.mr.downloads,
   mods: v.cf.mods + v.mr.mods,
-  active90: v.mr.active90,
-  mrMods: v.mr.mods,
+  activity: v.mr.activity,
 });
 
 // ------------------------------------------------------------------- loaders
@@ -146,4 +150,21 @@ export function familyLoaderCounts(f: FamilyEntry): Record<Loader, number> {
     out[l] = min && f.date < min ? 0 : f.cf.loaders[l] + f.mr.loaders[l];
   }
   return out;
+}
+
+/** Top loader across all versions, weighting each family's loader counts by
+ *  that family's popularity score. */
+export function weightedTopLoader(families: FamilyEntry[], generatedAt: string) {
+  const scores = new Map(
+    popularityScores(families.map(familyScoreInput), generatedAt).map((s) => [s.name, s.score]),
+  );
+  const weighted = Object.fromEntries(LOADERS.map((l) => [l, 0])) as Record<Loader, number>;
+  for (const f of families) {
+    const w = scores.get(f.key) ?? 0;
+    const counts = familyLoaderCounts(f);
+    for (const l of LOADERS) weighted[l] += w * counts[l];
+  }
+  const sum = LOADERS.reduce((a, l) => a + weighted[l], 0);
+  const loader = LOADERS.reduce((a, l) => (weighted[l] > weighted[a] ? l : a), LOADERS[0]);
+  return { loader, share: sum > 0 ? weighted[loader] / sum : 0 };
 }

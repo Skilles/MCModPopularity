@@ -346,10 +346,53 @@ body {
   white-space: nowrap;
 }
 
+/* ---------- info tooltip ---------- */
+.info-tip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border: 1px solid var(--baseline);
+  border-radius: 50%;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  cursor: help;
+  vertical-align: 2px;
+  margin-left: 8px;
+  flex: none;
+}
+.info-tip:hover, .info-tip:focus-visible {
+  color: var(--ink);
+  border-color: var(--muted);
+}
+.tip-body {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--ring);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  z-index: 20;
+  cursor: auto;
+}
+.info-tip:hover .tip-body,
+.info-tip:focus-visible .tip-body,
+.info-tip:focus-within .tip-body {
+  display: block;
+}
+
 .footer-note {
   color: var(--muted);
   font-size: 13.5px;
   margin-top: 24px;
-  max-width: 980px;
 }
 .footer-note a { color: var(--ink-2); }

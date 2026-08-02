@@ -15,16 +15,21 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
 - `scripts/fetch-data.ts` (`pnpm fetch-data`) — pulls both APIs, writes
   `data/latest.json` (full dataset) and `data/snapshots/DATE.json` (slim, for
   trends). Only writes when a metric moved >= 1% vs the committed data
-  (`--force` overrides). CurseForge search caps results at 10,000, so larger
-  counts are reconstructed from per-loader partitions and flagged `modsApprox`.
-  Downloads come from global top-N sweeps plus per-family filtered sweeps,
-  deduplicated by project id before attribution. `active90` = Modrinth mods
-  updated in the last 90 days (CurseForge has no date filter).
+  (`--force` overrides). CurseForge search caps results at 10,000; larger
+  counts are estimated from per-category partition sums divided by a
+  calibration factor (~2.3, mods carry multiple categories) measured each run
+  on slices with exact totals — flagged `modsApprox`. Downloads come from
+  global top-N sweeps plus per-family filtered sweeps, deduplicated by
+  project id. Activity is file-accurate: the top ~150 Modrinth mods per
+  family have their full version history fetched, and a mod is "active" for a
+  version only if it published a file for that version in the last 90 days
+  (CurseForge has no date filter).
 - Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 30% +
   mod count 25% + activity 25% + recency 20% (user-approved weights).
   Version+loader API filters match at project level, so impossible combos
   (e.g. NeoForge on 1.16) are clamped by loader launch dates in
-  `familyLoaderCounts`.
+  `familyLoaderCounts`. The "Top loader" tile weights loader counts by each
+  family's popularity score (`weightedTopLoader`).
 - Version "families" group patch versions (1.20.1 -> 1.20); works for both the
   1.x and date-based (26.1) version schemes. Sorted by release date, not by
   parsing version numbers.

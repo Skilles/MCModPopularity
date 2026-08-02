@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import InfoTip from '../components/InfoTip.astro';
 import VersionChart from '../components/VersionChart.tsx';
 import LoaderChart from '../components/LoaderChart.tsx';
 import PlatformShare from '../components/PlatformShare.tsx';
 import TrendChart from '../components/TrendChart.tsx';
 import {
-  chartFamilies, familyScoreInput, fmt, LOADERS, popularityScores, total,
+  chartFamilies, familyScoreInput, fmt, popularityScores, weightedTopLoader,
   type Dataset, type Snapshot,
 } from '../lib/data';
 import dataset from '../../data/latest.json';
@@ -22,10 +23,7 @@ const totalProjects =
 
 const topScored = popularityScores(families.map(familyScoreInput), data.generatedAt)
   .sort((a, b) => b.score - a.score)[0];
-const newest = families.filter((f) => f.cf.mods + f.mr.mods >= 500).at(-1) ?? families.at(-1)!;
-const loaderCounts = LOADERS.map((l) => ({ l, n: newest.cf.loaders[l] + newest.mr.loaders[l] }));
-const loaderSum = loaderCounts.reduce((a, c) => a + c.n, 0);
-const topLoader = loaderCounts.sort((a, b) => b.n - a.n)[0];
+const topLoader = weightedTopLoader(families, data.generatedAt);
 const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', quilt: 'Quilt' };
 ---
 <Layout title="MC Mod Popularity" generatedAt={data.generatedAt}>
@@ -46,9 +44,9 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
       <div class="d">mods + modpacks on both platforms</div>
     </div>
     <div class="tile" style="--tile-accent: var(--quilt)">
-      <div class="k">Top loader · {newest.key}</div>
-      <div class="v">{loaderNames[topLoader.l]}</div>
-      <div class="d">{Math.round((topLoader.n / loaderSum) * 100)}% of {newest.key} mods</div>
+      <div class="k">Top loader</div>
+      <div class="v">{loaderNames[topLoader.loader]}</div>
+      <div class="d">{Math.round(topLoader.share * 100)}% share, weighted by version popularity</div>
     </div>
   </div>
 
@@ -60,7 +58,16 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
     <div class="card">
       <div class="card-head" style="margin-bottom: 14px">
         <div>
-          <h2>Loader share by version</h2>
+          <h2 style="display: flex; align-items: center">
+            Loader share by version
+            <InfoTip>
+              Counts come from the platforms' version + loader search filters, which match
+              per project — so a mod shipping several loaders counts toward each of them.
+              Combinations that predate a loader's first supported version (e.g. NeoForge
+              before 1.20, Quilt before 1.18, Fabric before 1.14) are filtered out, since
+              matches there are artifacts of project-level filtering.
+            </InfoTip>
+          </h2>
           <div class="note">Share of mods per family, newest first</div>
         </div>
       </div>
@@ -69,7 +76,15 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
     <div class="card">
       <div class="card-head" style="margin-bottom: 14px">
         <div>
-          <h2>CurseForge vs Modrinth</h2>
+          <h2 style="display: flex; align-items: center">
+            CurseForge vs Modrinth
+            <InfoTip>
+              Download shares come from download sweeps of both platforms. Mod and modpack
+              counts above CurseForge's 10,000-result search cap are estimated by summing
+              per-category counts and dividing by a calibration factor (~{data.cfOverlapFactor.mods})
+              measured on versions where exact totals are available, and are marked ~.
+            </InfoTip>
+          </h2>
           <div class="note">Platform share per family, newest first</div>
         </div>
       </div>
@@ -88,12 +103,6 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
   </div>
 
   <p class="footer-note">
-    Download totals sum every project reached by the download sweeps (global top {fmt(data.sweepSize.mods)} plus per-version filtered sweeps, deduplicated).
-    Counts marked ~ are approximate — CurseForge caps search results at 10,000, so larger counts are
-    reconstructed from per-loader queries. "Recently updated" means updated on Modrinth in the last {data.activeDays} days.
-    Version + loader combinations are matched per project, so a mod shipping
-    several loaders counts toward each; combinations that predate a loader's existence are excluded.
-    Cross-posted projects are counted once per platform.
-    Data from the <a href="https://docs.curseforge.com/">CurseForge</a> and <a href="https://docs.modrinth.com/">Modrinth</a> APIs, refreshed daily.
+    Data from the <a href="https://docs.curseforge.com/">CurseForge</a> and <a href="https://docs.modrinth.com/">Modrinth</a> APIs, refreshed daily at 06:00 UTC.
   </p>
 </Layout>

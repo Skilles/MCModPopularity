@@ -70,9 +70,7 @@ export default function PlatformShare({ families, totals }: {
         })}
       </div>
       <div className="note" style={{ marginTop: 14, minHeight: 20 }}>
-        {tip ?? (metric === 'downloads'
-          ? 'Left/right numbers are the CurseForge·Modrinth split per family.'
-          : 'CurseForge counts above 10k are reconstructed lower bounds, so these shares skew toward Modrinth.')}
+        {tip ?? 'Left/right numbers are the CurseForge·Modrinth split per family.'}
       </div>
     </div>
   );
