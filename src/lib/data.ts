@@ -11,18 +11,20 @@ export interface VersionEntry {
   v: string;
   date: string;
   cf: PlatformStats;
-  mr: PlatformStats;
+  mr: PlatformStats & { active90: number };
 }
 export interface FamilyEntry {
   key: string;
   date: string;
   cf: PlatformStats & { loaders: Record<Loader, number> };
-  mr: PlatformStats & { loaders: Record<Loader, number> };
+  mr: PlatformStats & { loaders: Record<Loader, number>; active90: number };
   versions: VersionEntry[];
 }
 export interface Dataset {
   generatedAt: string;
   sweepSize: { mods: number; modpacks: number };
+  sweptProjects: { cf: number; mr: number };
+  activeDays: number;
   totals: { cf: PlatformStats; mr: PlatformStats };
   families: FamilyEntry[];
 }
@@ -53,4 +55,95 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
   return data.families
     .filter((f) => f.cf.mods + f.mr.mods >= minMods)
     .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// ---------------------------------------------------------------- popularity
+
+/**
+ * 0-100 popularity index. Balanced blend agreed with the user:
+ * downloads 30% + mod count 25% + maintenance activity 25% + recency 20%.
+ * Downloads/counts are log-scaled and normalized within the charted set;
+ * activity is the share of Modrinth mods updated in the last 90 days
+ * (the only platform with a date filter); recency decays with version age.
+ */
+export interface ScoreParts {
+  downloads: number;
+  mods: number;
+  activeShare: number;
+  ageYears: number;
+}
+export interface ScoredRow {
+  name: string;
+  score: number;
+  parts: ScoreParts;
+}
+
+interface ScoreInput {
+  name: string;
+  date: string;
+  downloads: number;
+  mods: number;
+  active90: number;
+  mrMods: number;
+}
+
+export function popularityScores(rows: ScoreInput[], generatedAt: string): ScoredRow[] {
+  const now = new Date(generatedAt).getTime();
+  const logD = rows.map((r) => Math.log10(1 + r.downloads));
+  const logC = rows.map((r) => Math.log10(1 + r.mods));
+  const maxD = Math.max(...logD, 1);
+  const maxC = Math.max(...logC, 1);
+  return rows.map((r, i) => {
+    // Small Modrinth populations make the activity ratio noisy — floor the
+    // denominator so a 5-mod version can't score 100% activity.
+    const activeShare = r.active90 / Math.max(r.mrMods, 30);
+    const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
+    const recency = Math.exp(-ageYears / 2.5);
+    const score =
+      100 * (0.3 * (logD[i] / maxD) + 0.25 * (logC[i] / maxC) + 0.25 * Math.min(activeShare, 1) + 0.2 * recency);
+    return {
+      name: r.name,
+      score: Math.round(score),
+      parts: { downloads: r.downloads, mods: r.mods, activeShare, ageYears },
+    };
+  });
+}
+
+export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
+  name: f.key,
+  date: f.date,
+  downloads: total(f, 'downloads'),
+  mods: total(f, 'mods'),
+  active90: f.mr.active90,
+  mrMods: f.mr.mods,
+});
+export const versionScoreInput = (v: VersionEntry): ScoreInput => ({
+  name: v.v,
+  date: v.date,
+  downloads: v.cf.downloads + v.mr.downloads,
+  mods: v.cf.mods + v.mr.mods,
+  active90: v.mr.active90,
+  mrMods: v.mr.mods,
+});
+
+// ------------------------------------------------------------------- loaders
+
+/**
+ * Both APIs match version+loader filters at the project level, so a mod with
+ * a NeoForge 1.20 file and a Forge 1.16 file "matches" NeoForge+1.16. Zero
+ * out combos that predate the loader's first supported version family.
+ */
+const LOADER_MIN_DATE: Partial<Record<Loader, string>> = {
+  fabric: '2019-04-01', // 1.14
+  quilt: '2021-11-01', // 1.18
+  neoforge: '2023-06-01', // 1.20 (forked at 1.20.1)
+};
+
+export function familyLoaderCounts(f: FamilyEntry): Record<Loader, number> {
+  const out = {} as Record<Loader, number>;
+  for (const l of LOADERS) {
+    const min = LOADER_MIN_DATE[l];
+    out[l] = min && f.date < min ? 0 : f.cf.loaders[l] + f.mr.loaders[l];
+  }
+  return out;
 }

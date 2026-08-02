@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { fmt, LOADERS, type FamilyEntry, type Loader } from '../lib/data';
+import { familyLoaderCounts, fmt, LOADERS, type FamilyEntry, type Loader } from '../lib/data';
 
 const LOADER_LABEL: Record<Loader, string> = {
   fabric: 'Fabric',
@@ -7,44 +7,47 @@ const LOADER_LABEL: Record<Loader, string> = {
   neoforge: 'NeoForge',
   quilt: 'Quilt',
 };
+const loaderVar = (l: Loader) => `var(--${l === 'neoforge' ? 'neo' : l})`;
 
-/** Horizontal 100%-stacked share of mod counts per loader, newest families last. */
+/** Horizontal 100%-stacked share of mod counts per loader, newest family first. */
 export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
-  const recent = families.slice(-8);
   const [tip, setTip] = useState<string | null>(null);
+  const rows = [...families]
+    .reverse()
+    .map((f) => {
+      const loaders = familyLoaderCounts(f);
+      const counts = LOADERS.map((l) => ({ l, n: loaders[l] }));
+      return { key: f.key, counts, sum: counts.reduce((a, c) => a + c.n, 0) };
+    })
+    .filter((r) => r.sum > 0);
 
   return (
     <div>
-      <div className="legend" style={{ marginBottom: 16 }}>
+      <div className="legend" style={{ marginBottom: 18 }}>
         {LOADERS.map((l) => (
-          <span key={l}><i style={{ background: `var(--${l === 'neoforge' ? 'neo' : l})` }} />{LOADER_LABEL[l]}</span>
+          <span key={l}><i style={{ background: loaderVar(l) }} />{LOADER_LABEL[l]}</span>
         ))}
       </div>
-      <div className="hbars">
-        {recent.map((f) => {
-          const counts = LOADERS.map((l) => ({ l, n: f.cf.loaders[l] + f.mr.loaders[l] }));
-          const sum = counts.reduce((a, c) => a + c.n, 0);
-          if (sum === 0) return null;
-          return (
-            <div className="hrow" key={f.key}>
-              <span className="lbl">{f.key}</span>
-              <div className="track">
-                {counts.filter((c) => c.n > 0).map((c) => (
-                  <i
-                    key={c.l}
-                    style={{ background: `var(--${c.l === 'neoforge' ? 'neo' : c.l})`, width: `${(c.n / sum) * 100}%` }}
-                    title={`${LOADER_LABEL[c.l]} · ${fmt(c.n)} mods (${Math.round((c.n / sum) * 100)}%)`}
-                    onMouseEnter={() => setTip(`${f.key}: ${LOADER_LABEL[c.l]} ${Math.round((c.n / sum) * 100)}% (${fmt(c.n)} mods)`)}
-                    onMouseLeave={() => setTip(null)}
-                  />
-                ))}
-              </div>
+      <div className="hbars scroll">
+        {rows.map((r) => (
+          <div className="hrow" key={r.key}>
+            <span className="lbl">{r.key}</span>
+            <div className="track">
+              {r.counts.filter((c) => c.n > 0).map((c) => (
+                <i
+                  key={c.l}
+                  style={{ background: loaderVar(c.l), width: `${(c.n / r.sum) * 100}%` }}
+                  title={`${LOADER_LABEL[c.l]} · ${fmt(c.n)} mods (${Math.round((c.n / r.sum) * 100)}%)`}
+                  onMouseEnter={() => setTip(`${r.key}: ${LOADER_LABEL[c.l]} ${Math.round((c.n / r.sum) * 100)}% (${fmt(c.n)} mods)`)}
+                  onMouseLeave={() => setTip(null)}
+                />
+              ))}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
-      <div className="note" style={{ marginTop: 12, minHeight: 18 }}>
-        {tip ?? 'Hover a segment for exact numbers. Counts combine both platforms.'}
+      <div className="note" style={{ marginTop: 14, minHeight: 20 }}>
+        {tip ?? 'Hover a segment for exact numbers. Mods shipping several loaders count toward each.'}
       </div>
     </div>
   );

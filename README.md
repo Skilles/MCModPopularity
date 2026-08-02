@@ -19,7 +19,10 @@ pnpm dev
 - Counts come from the platforms' search APIs. CurseForge caps search results
   at 10,000, so larger counts are reconstructed from per-loader partitions and
   marked approximate (~).
-- Download totals sum the top 10k mods and top 5k modpacks per platform by
-  downloads; the long tail contributes little.
+- Download totals sum every project reached by the sweeps: global top 10k mods
+  / 5k modpacks per platform plus per-version filtered sweeps, deduplicated.
+- The popularity index blends downloads (30%), mod count (25%), maintenance
+  activity (25%, share of Modrinth mods updated in 90 days), and version
+  recency (20%).
 - A mod counts toward every Minecraft version it supports, and cross-posted
   projects count once per platform.
