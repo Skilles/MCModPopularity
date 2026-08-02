@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git config user.name)",
+      "PowerShell(git config user.email)"
+    ]
+  }
+}
