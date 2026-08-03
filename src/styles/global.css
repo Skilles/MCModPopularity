@@ -287,6 +287,19 @@ body {
   padding: 10px 14px;
   font-size: 13.5px;
 }
+.tip-host {
+  position: relative;
+}
+.float-tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 30;
+}
+.float-tip.below {
+  transform: translate(-50%, 16px);
+}
 .chart-tip .t {
   font-weight: 600;
   margin-bottom: 5px;

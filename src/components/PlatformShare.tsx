@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fmt, total, type FamilyEntry, type Metric, type PlatformStats } from '../lib/data';
+import { useHoverTip } from './useHoverTip';
 
 const METRICS: { key: Metric; label: string }[] = [
   { key: 'downloads', label: 'Downloads' },
@@ -13,7 +14,7 @@ export default function PlatformShare({ families, totals }: {
   totals: { cf: PlatformStats; mr: PlatformStats };
 }) {
   const [metric, setMetric] = useState<Metric>('downloads');
-  const [tip, setTip] = useState<string | null>(null);
+  const { bind, tipEl } = useHoverTip();
 
   const overallCf = totals.cf[metric];
   const overallMr = totals.mr[metric];
@@ -40,37 +41,33 @@ export default function PlatformShare({ families, totals }: {
           ))}
         </div>
       </div>
-      <div className="hbars scroll">
-        {rows.map((r) => {
-          const mrPct = Math.round((r.mr / r.sum) * 100);
-          const detail = `${r.key}: CurseForge ${fmt(r.cf)} (${100 - mrPct}%) · Modrinth ${fmt(r.mr)} (${mrPct}%)`;
-          return (
-            <div className="hrow" key={r.key}>
-              <span className="lbl">{r.key}</span>
-              <div className="track">
-                {r.cf > 0 && (
-                  <i
-                    style={{ background: 'var(--cf)', width: `${(r.cf / r.sum) * 100}%` }}
-                    title={`CurseForge · ${fmt(r.cf)} (${100 - mrPct}%)`}
-                    onMouseEnter={() => setTip(detail)}
-                    onMouseLeave={() => setTip(null)}
-                  />
-                )}
-                {r.mr > 0 && (
-                  <i
-                    style={{ background: 'var(--mr)', width: `${(r.mr / r.sum) * 100}%` }}
-                    title={`Modrinth · ${fmt(r.mr)} (${mrPct}%)`}
-                    onMouseEnter={() => setTip(detail)}
-                    onMouseLeave={() => setTip(null)}
-                  />
-                )}
+      <div className="tip-host">
+        {tipEl}
+        <div className="hbars scroll">
+          {rows.map((r) => {
+            const mrPct = Math.round((r.mr / r.sum) * 100);
+            const tipContent = (
+              <>
+                <div className="t">{r.key}</div>
+                <div className="row"><i style={{ background: 'var(--cf)' }} />CurseForge<b>{fmt(r.cf)} ({100 - mrPct}%)</b></div>
+                <div className="row"><i style={{ background: 'var(--mr)' }} />Modrinth<b>{fmt(r.mr)} ({mrPct}%)</b></div>
+              </>
+            );
+            return (
+              <div className="hrow" key={r.key}>
+                <span className="lbl">{r.key}</span>
+                <div className="track">
+                  {r.cf > 0 && (
+                    <i style={{ background: 'var(--cf)', width: `${(r.cf / r.sum) * 100}%` }} {...bind(tipContent)} />
+                  )}
+                  {r.mr > 0 && (
+                    <i style={{ background: 'var(--mr)', width: `${(r.mr / r.sum) * 100}%` }} {...bind(tipContent)} />
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="note" style={{ marginTop: 14, minHeight: 20 }}>
-        {tip ?? 'Hover a bar for exact numbers.'}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
