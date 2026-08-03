@@ -34,9 +34,7 @@ export default function PlatformShare({ families, totals }: {
             <span className="info-tip" tabIndex={0} role="note" aria-label="More about this chart's data">
               <span aria-hidden="true">i</span>
               <span className="tip-body">
-                Compares how much of each version's modding happens on each platform.
-                CurseForge doesn't report exact numbers above 10,000, so larger counts
-                are careful estimates and marked with ~.
+                CurseForge counts above 10,000 are estimates, marked with ~.
               </span>
             </span>
           </h2>

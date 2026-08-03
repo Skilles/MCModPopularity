@@ -70,8 +70,8 @@ export default function VersionChart({ families, generatedAt }: {
               <span className="info-tip" tabIndex={0} role="note" aria-label="How the popularity index works">
                 <span aria-hidden="true">i</span>
                 <span className="tip-body">
-                  A 0–100 score combining each version's downloads, how many mods and
-                  modpacks it has, how many of its mods were updated recently, and how new it is.
+                  Combines downloads, mod and modpack counts, recent updates, and age
+                  into a 0–100 score.
                 </span>
               </span>
             )}

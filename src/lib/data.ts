@@ -119,10 +119,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const recency = Math.exp(-ageYears / 2.5);
     const blend =
       0.4 * (rootD[i] / maxD) +
-      0.32 * (logC[i] / maxC) +
+      0.30 * (logC[i] / maxC) +
       0.08 * (logP[i] / maxP) +
-      0.15 * Math.min(activeShare, 1) +
-      0.05 * recency;
+      0.13 * Math.min(activeShare, 1) +
+      0.09 * recency;
     return {
       name: r.name,
       blend,

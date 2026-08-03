@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
@@ -9,6 +9,7 @@ const MAX_SERIES = 4;
 
 /** Share of combined downloads per family across daily snapshots. */
 export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
   const { rows, keys } = useMemo(() => {
     const sorted = [...snapshots].sort((a, b) => a.date.localeCompare(b.date));
     const latest = sorted.at(-1);
@@ -39,11 +40,30 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
     );
   }
 
+  const toggle = (k: string) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k);
+      else if (next.size < keys.length - 1) next.add(k); // keep at least one visible
+      return next;
+    });
+  const visible = keys.filter((k) => !hidden.has(k));
+
   return (
     <div>
       <div className="legend" style={{ marginBottom: 6 }}>
         {keys.map((k, i) => (
-          <span key={k}><i style={{ background: SLOT_COLORS[i] }} />{k}</span>
+          <button
+            key={k}
+            type="button"
+            className={`chip${hidden.has(k) ? ' off' : ''}`}
+            onClick={() => toggle(k)}
+            aria-pressed={!hidden.has(k)}
+            title={hidden.has(k) ? `Show ${k}` : `Hide ${k}`}
+          >
+            <i style={{ background: SLOT_COLORS[i] }} />
+            <span>{k}</span>
+          </button>
         ))}
       </div>
       <ResponsiveContainer width="100%" height={220}>
@@ -53,14 +73,14 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
             dataKey="date"
             tickLine={false}
             axisLine={{ stroke: 'var(--baseline)' }}
-            tick={{ fill: 'var(--muted)', fontSize: 11, fontFamily: 'IBM Plex Mono, monospace' }}
+            tick={{ fill: 'var(--muted)', fontSize: 12.5, fontFamily: 'IBM Plex Mono, monospace' }}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
-            tick={{ fill: 'var(--muted)', fontSize: 11, fontFamily: 'IBM Plex Mono, monospace' }}
+            tick={{ fill: 'var(--muted)', fontSize: 12.5, fontFamily: 'IBM Plex Mono, monospace' }}
             tickFormatter={(v: number) => `${v}%`}
-            width={44}
+            width={48}
           />
           <Tooltip
             cursor={{ stroke: 'var(--baseline)' }}
@@ -70,7 +90,7 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
               return (
                 <div className="chart-tip">
                   <div className="t">{label}</div>
-                  {payload.map((p, i) => (
+                  {payload.map((p) => (
                     <div className="row" key={String(p.dataKey)}>
                       <i style={{ background: SLOT_COLORS[keys.indexOf(String(p.dataKey))] }} />
                       {String(p.dataKey)}<b>{p.value}%</b>
@@ -80,12 +100,12 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
               );
             }}
           />
-          {keys.map((k, i) => (
+          {visible.map((k) => (
             <Line
               key={k}
               type="monotone"
               dataKey={k}
-              stroke={SLOT_COLORS[i]}
+              stroke={SLOT_COLORS[keys.indexOf(k)]}
               strokeWidth={2}
               dot={false}
               isAnimationActive={false}

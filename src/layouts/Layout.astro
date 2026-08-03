@@ -37,7 +37,7 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
           <h1>MC <span class="accent">Mod Popularity</span></h1>
         </div>
         <div class="header-right">
-          <div class="updated">UPDATED {updated}</div>
+          <div class="updated" data-ts={generatedAt}>UPDATED {updated}</div>
           <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
             <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -52,6 +52,15 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
         document.documentElement.dataset.theme = next;
         localStorage.setItem('theme', next);
       });
+
+      // Re-render the build-time (UTC) timestamp in the viewer's timezone.
+      const updatedEl = document.querySelector<HTMLElement>('.updated')!;
+      const ts = new Date(updatedEl.dataset.ts!);
+      if (!Number.isNaN(ts.getTime())) {
+        updatedEl.textContent = 'UPDATED ' + ts
+          .toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+          .toUpperCase();
+      }
     </script>
   </body>
 </html>
