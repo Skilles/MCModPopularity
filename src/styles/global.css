@@ -9,6 +9,7 @@
   --baseline: #c9c5b4;
   --ring: rgba(25, 24, 19, 0.1);
   --grass: #4f9d3a;
+  --grass-alt: #62ab42;
   --grass-deep: #3a7a2a;
   --dirt: #7a5537;
   --gold: #c98500;
@@ -32,6 +33,7 @@
   --baseline: #3a3933;
   --ring: rgba(255, 255, 255, 0.1);
   --grass: #63b23a;
+  --grass-alt: #549d2e;
   --grass-deep: #7cc94e;
   --dirt: #96684a;
   --gold: #e0a520;
@@ -158,6 +160,12 @@ body {
   border: 1px solid var(--ring);
   border-top: 4px solid var(--tile-accent, var(--grass));
   padding: 20px 22px 18px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--baseline);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 .tile .k {
   color: var(--muted);
@@ -240,6 +248,15 @@ body {
   height: 12px;
   display: inline-block;
   flex: none;
+  border-radius: 3px;
+}
+
+/* chart bar hover (Recharts SVG) */
+.recharts-bar-rectangle path {
+  transition: filter 0.15s ease;
+}
+.recharts-bar-rectangle:hover path {
+  filter: brightness(1.12) saturate(1.05);
 }
 .seg {
   display: inline-flex;
@@ -253,6 +270,11 @@ body {
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.seg button:hover:not(.on) {
+  color: var(--ink);
+  background: var(--ring);
 }
 .seg button.on {
   background: var(--grass);
@@ -300,8 +322,10 @@ body {
 .empty-note {
   color: var(--muted);
   font-size: 14.5px;
-  padding: 56px 0;
+  padding: 48px 24px;
+  margin: 8px 0 4px;
   text-align: center;
+  border: 1px dashed var(--baseline);
 }
 
 /* ---------- horizontal share rows ---------- */
@@ -319,6 +343,16 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--baseline) transparent;
 }
+.scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--baseline);
+  border-radius: 4px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
 .hrow {
   display: grid;
   grid-template-columns: 52px 1fr;
@@ -335,6 +369,21 @@ body {
   display: flex;
   gap: 2px;
   height: 20px;
+}
+.hrow .track i {
+  transition: filter 0.15s ease;
+}
+.hrow .track i:hover {
+  filter: brightness(1.15) saturate(1.05);
+}
+.hrow .track i:first-child {
+  border-radius: 3px 0 0 3px;
+}
+.hrow .track i:last-child {
+  border-radius: 0 3px 3px 0;
+}
+.hrow .track i:only-child {
+  border-radius: 3px;
 }
 
 /* ---------- info tooltip ---------- */
@@ -384,6 +433,12 @@ body {
 .footer-note {
   color: var(--muted);
   font-size: 13.5px;
-  margin-top: 24px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--grid);
 }
-.footer-note a { color: var(--ink-2); }
+.footer-note a {
+  color: var(--ink-2);
+  text-underline-offset: 3px;
+}
+.footer-note a:hover { color: var(--ink); }

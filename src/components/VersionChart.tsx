@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import {
   familyScoreInput, fmt, popularityScores, versionScoreInput,
@@ -125,11 +125,14 @@ export default function VersionChart({ families, generatedAt }: {
           {isScore ? (
             <Bar
               dataKey="score"
-              fill="var(--grass)"
+              radius={[4, 4, 0, 0]}
               onClick={(d: Row) => !family && setDrill(d.name)}
               cursor={family ? undefined : 'pointer'}
               isAnimationActive={false}
             >
+              {rows.map((r, i) => (
+                <Cell key={r.name} fill={i % 2 ? 'var(--grass-alt)' : 'var(--grass)'} />
+              ))}
               <LabelList
                 dataKey="score"
                 position="top"
@@ -150,6 +153,7 @@ export default function VersionChart({ families, generatedAt }: {
                 dataKey="mr"
                 stackId="a"
                 fill="var(--mr)"
+                radius={[4, 4, 0, 0]}
                 onClick={(d: Row) => !family && setDrill(d.name)}
                 cursor={family ? undefined : 'pointer'}
                 isAnimationActive={false}

@@ -72,7 +72,10 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
  * (log compressed legacy versions' accumulated-download advantage too much);
  * counts stay log-scaled. Activity is the file-accurate sampled share of
  * mods that recently shipped a file for that version. Recency decays with
- * version age.
+ * version age. The blended scores are then min-max rescaled within the
+ * scored set, so the weakest version reads 0 and the strongest 100 — the
+ * index is explicitly relative to today's chart (and, in drill-down,
+ * relative to the family's own patches).
  */
 export interface ScoreParts {
   downloads: number;
@@ -104,26 +107,32 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
   const maxD = Math.max(...rootD, 1);
   const maxC = Math.max(...logC, 1);
   const maxP = Math.max(...logP, 1);
-  return rows.map((r, i) => {
+  const scored = rows.map((r, i) => {
     // File-accurate sampled share; dampened when the sample is tiny so a
     // 5-mod version can't score 100% activity.
     const raw = r.activity.sampled ? r.activity.active / r.activity.sampled : 0;
     const activeShare = raw * Math.min(1, r.activity.sampled / 30);
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
-    const score = 100 * (
+    const blend =
       0.4 * (rootD[i] / maxD) +
       0.32 * (logC[i] / maxC) +
       0.08 * (logP[i] / maxP) +
       0.15 * Math.min(activeShare, 1) +
-      0.05 * recency
-    );
+      0.05 * recency;
     return {
       name: r.name,
-      score: Math.round(score),
+      blend,
       parts: { downloads: r.downloads, mods: r.mods, modpacks: r.modpacks, activeShare, ageYears },
     };
   });
+  const min = Math.min(...scored.map((s) => s.blend));
+  const max = Math.max(...scored.map((s) => s.blend));
+  return scored.map((s) => ({
+    name: s.name,
+    score: max > min ? Math.round(((s.blend - min) / (max - min)) * 100) : 100,
+    parts: s.parts,
+  }));
 }
 
 export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
