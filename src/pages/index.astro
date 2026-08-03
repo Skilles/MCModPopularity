@@ -72,20 +72,7 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
       <LoaderChart client:visible families={families} />
     </div>
     <div class="card">
-      <div class="card-head" style="margin-bottom: 14px">
-        <div>
-          <h2 style="display: flex; align-items: center">
-            CurseForge vs Modrinth
-            <InfoTip>
-              Compares how much of each version's modding happens on each platform.
-              CurseForge doesn't report exact numbers above 10,000, so larger counts
-              are careful estimates and marked with ~.
-            </InfoTip>
-          </h2>
-          <div class="note">Platform share per family, newest first</div>
-        </div>
-      </div>
-      <PlatformShare client:visible families={families} totals={data.totals} />
+      <PlatformShare client:load families={families} totals={data.totals} />
     </div>
   </div>
 

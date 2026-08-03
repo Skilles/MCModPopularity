@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { familyLoaderCounts, fmt, type FamilyEntry, type Loader } from '../lib/data';
 import { useHoverTip } from './useHoverTip';
 
@@ -11,14 +12,28 @@ const LOADER_LABEL: Record<Loader, string> = {
 const DISPLAY_ORDER: Loader[] = ['fabric', 'quilt', 'forge', 'neoforge'];
 const loaderVar = (l: Loader) => `var(--${l === 'neoforge' ? 'neo' : l})`;
 
-/** Horizontal 100%-stacked share of mod counts per loader, newest family first. */
+/**
+ * Horizontal 100%-stacked share of mod counts per loader, newest family
+ * first. Legend chips toggle loaders on/off; families with nothing visible
+ * disappear.
+ */
 export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
   const { bind, tipEl } = useHoverTip();
+  const [hidden, setHidden] = useState<Set<Loader>>(new Set());
+
+  const toggle = (l: Loader) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(l)) next.delete(l);
+      else if (next.size < DISPLAY_ORDER.length - 1) next.add(l); // keep at least one visible
+      return next;
+    });
+
   const rows = [...families]
     .reverse()
     .map((f) => {
       const loaders = familyLoaderCounts(f);
-      const counts = DISPLAY_ORDER.map((l) => ({ l, n: loaders[l] }));
+      const counts = DISPLAY_ORDER.filter((l) => !hidden.has(l)).map((l) => ({ l, n: loaders[l] }));
       return { key: f.key, counts, sum: counts.reduce((a, c) => a + c.n, 0) };
     })
     .filter((r) => r.sum > 0);
@@ -27,7 +42,17 @@ export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
     <div>
       <div className="legend" style={{ marginBottom: 18 }}>
         {DISPLAY_ORDER.map((l) => (
-          <span key={l}><i style={{ background: loaderVar(l) }} />{LOADER_LABEL[l]}</span>
+          <button
+            key={l}
+            type="button"
+            className={`chip${hidden.has(l) ? ' off' : ''}`}
+            onClick={() => toggle(l)}
+            aria-pressed={!hidden.has(l)}
+            title={hidden.has(l) ? `Show ${LOADER_LABEL[l]}` : `Hide ${LOADER_LABEL[l]}`}
+          >
+            <i style={{ background: loaderVar(l) }} />
+            <span>{LOADER_LABEL[l]}</span>
+          </button>
         ))}
       </div>
       <div className="tip-host">
@@ -55,7 +80,7 @@ export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
         </div>
       </div>
       <div className="note" style={{ marginTop: 14 }}>
-        A mod can count toward several loaders.
+        Click a loader in the legend to hide it. A mod can count toward several loaders.
       </div>
     </div>
   );

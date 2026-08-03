@@ -27,8 +27,11 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
 - Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 40%
   (sqrt-scaled) + mod count 32% + modpack count 8% + activity 15% +
   recency 5% (user-approved weights; recency bias reduced three times).
-  Blended scores are min-max rescaled within the scored set (weakest = 0,
-  strongest = 100), including per-family in drill-down. Version+loader API filters match at project
+  The downloads input is `downloadsWeighted` — each project's downloads
+  split evenly across its supported versions — so mid-range versions don't
+  collect full credit from every long-lived mod (raw `downloads` stays on
+  the charts). Blended scores are min-max rescaled within the scored set
+  (weakest = 0, strongest = 100), including per-family in drill-down. Version+loader API filters match at project
   level, so impossible combos (e.g. NeoForge on 1.16) are clamped by loader
   launch dates in `familyLoaderCounts`. The "Top loader" tile weights loader
   counts by popularity score x exp(-age/4yr) so recent versions dominate but

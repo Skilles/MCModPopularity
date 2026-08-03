@@ -28,10 +28,19 @@ export default function PlatformShare({ families, totals }: {
   return (
     <div>
       <div className="card-head" style={{ marginBottom: 14 }}>
-        <div className="legend">
-          <span><i style={{ background: 'var(--cf)' }} />CurseForge {100 - overallPct}%</span>
-          <span><i style={{ background: 'var(--mr)' }} />Modrinth {overallPct}%</span>
-          <span style={{ color: 'var(--muted)' }}>overall, all {metric}</span>
+        <div>
+          <h2 style={{ display: 'flex', alignItems: 'center' }}>
+            CurseForge vs Modrinth
+            <span className="info-tip" tabIndex={0} role="note" aria-label="More about this chart's data">
+              <span aria-hidden="true">i</span>
+              <span className="tip-body">
+                Compares how much of each version's modding happens on each platform.
+                CurseForge doesn't report exact numbers above 10,000, so larger counts
+                are careful estimates and marked with ~.
+              </span>
+            </span>
+          </h2>
+          <div className="note">Platform share per family, newest first</div>
         </div>
         <div className="seg">
           {METRICS.map((m) => (
@@ -40,6 +49,11 @@ export default function PlatformShare({ families, totals }: {
             </button>
           ))}
         </div>
+      </div>
+      <div className="legend" style={{ marginBottom: 16 }}>
+        <span><i style={{ background: 'var(--cf)' }} />CurseForge {100 - overallPct}%</span>
+        <span><i style={{ background: 'var(--mr)' }} />Modrinth {overallPct}%</span>
+        <span style={{ color: 'var(--muted)' }}>overall, all {metric}</span>
       </div>
       <div className="tip-host">
         {tipEl}

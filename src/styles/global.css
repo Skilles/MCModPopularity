@@ -195,14 +195,35 @@ body {
   margin-bottom: 16px;
   position: relative;
 }
+/* pixel staircase corners: grass top-left, dirt bottom-right */
 .card::before {
   content: '';
   position: absolute;
   top: -1px;
   left: -1px;
-  width: 16px;
-  height: 16px;
-  background: conic-gradient(from 90deg at 8px 8px, var(--grass) 0 90deg, transparent 90deg);
+  width: 18px;
+  height: 18px;
+  background:
+    linear-gradient(var(--grass) 0 0) top left / 18px 6px,
+    linear-gradient(var(--grass) 0 0) top left / 12px 12px,
+    linear-gradient(var(--grass) 0 0) top left / 6px 18px;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  background:
+    linear-gradient(var(--dirt) 0 0) bottom right / 12px 4px,
+    linear-gradient(var(--dirt) 0 0) bottom right / 8px 8px,
+    linear-gradient(var(--dirt) 0 0) bottom right / 4px 12px;
+  background-repeat: no-repeat;
+  opacity: 0.55;
+  pointer-events: none;
 }
 .card h2 {
   font-size: 19px;
@@ -250,6 +271,19 @@ body {
   flex: none;
   border-radius: 3px;
 }
+.legend button.chip {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+.legend button.chip:hover { color: var(--ink); }
+.legend button.chip.off { opacity: 0.35; }
+.legend button.chip.off span { text-decoration: line-through; }
 
 /* chart bar hover (Recharts SVG) */
 .recharts-bar-rectangle path {
@@ -257,6 +291,12 @@ body {
 }
 .recharts-bar-rectangle:hover path {
   filter: brightness(1.12) saturate(1.05);
+}
+/* no focus ring when clicking around the chart */
+.recharts-wrapper,
+.recharts-wrapper svg,
+.recharts-wrapper .recharts-surface {
+  outline: none !important;
 }
 .seg {
   display: inline-flex;

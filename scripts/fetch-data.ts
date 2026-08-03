@@ -106,6 +106,9 @@ interface PlatformStats {
   modsApprox?: boolean;
   /** Downloads summed over the deduped sweeps, mods + modpacks. */
   downloads: number;
+  /** Downloads split evenly across each project's supported versions —
+   *  the popularity score's input (charts show raw `downloads`). */
+  downloadsWeighted: number;
 }
 interface FamilyEntry {
   key: string;
@@ -122,21 +125,33 @@ const familyOf = (v: string) => v.split(".").slice(0, 2).join(".");
 /** Swept projects deduped by id across the global and per-family sweeps. */
 interface SweptProject { downloads: number; versions: Set<string> }
 
+/**
+ * Raw attribution credits a project's full downloads to every version it
+ * supports ("downloads available for this version" — what the charts show).
+ * Weighted attribution splits the downloads evenly across the supported
+ * versions/families instead; the popularity score uses it so versions inside
+ * long support ranges don't collect full credit from every long-lived mod.
+ */
 function attribute(projects: Map<string | number, SweptProject>, releaseSet: Set<string>) {
   const perVersion = new Map<string, number>();
   const perFamily = new Map<string, number>();
+  const perVersionW = new Map<string, number>();
+  const perFamilyW = new Map<string, number>();
   let total = 0;
   for (const p of projects.values()) {
     total += p.downloads;
-    const families = new Set<string>();
-    for (const v of p.versions) {
-      if (!releaseSet.has(v)) continue;
+    const versions = [...p.versions].filter((v) => releaseSet.has(v));
+    const families = new Set(versions.map(familyOf));
+    for (const v of versions) {
       perVersion.set(v, (perVersion.get(v) ?? 0) + p.downloads);
-      families.add(familyOf(v));
+      perVersionW.set(v, (perVersionW.get(v) ?? 0) + p.downloads / versions.length);
     }
-    for (const f of families) perFamily.set(f, (perFamily.get(f) ?? 0) + p.downloads);
+    for (const f of families) {
+      perFamily.set(f, (perFamily.get(f) ?? 0) + p.downloads);
+      perFamilyW.set(f, (perFamilyW.get(f) ?? 0) + p.downloads / families.size);
+    }
   }
-  return { perVersion, perFamily, total, projects: projects.size };
+  return { perVersion, perFamily, perVersionW, perFamilyW, total, projects: projects.size };
 }
 
 // ------------------------------------------------------------------ modrinth
@@ -426,12 +441,14 @@ async function main() {
           modpacks: mrP,
           activity: activityFor([m.version], sampleFrame),
           downloads: mrDl.perVersion.get(m.version) ?? 0,
+          downloadsWeighted: Math.round(mrDl.perVersionW.get(m.version) ?? 0),
         },
         cf: {
           mods: cfM.count,
           ...(cfM.approx || cfP.approx ? { modsApprox: true } : {}),
           modpacks: cfP.count,
           downloads: cfDl.perVersion.get(m.version) ?? 0,
+          downloadsWeighted: Math.round(cfDl.perVersionW.get(m.version) ?? 0),
         },
       };
     }));
@@ -444,6 +461,7 @@ async function main() {
         modpacks: mrPackCount,
         activity: activityFor(vs, sampleFrame),
         downloads: mrDl.perFamily.get(key) ?? 0,
+        downloadsWeighted: Math.round(mrDl.perFamilyW.get(key) ?? 0),
         loaders: Object.fromEntries(LOADERS.map((l, i) => [l, mrLoaders[i]])) as Record<Loader, number>,
       },
       cf: {
@@ -451,6 +469,7 @@ async function main() {
         ...(cfModCount.approx ? { modsApprox: true } : {}),
         modpacks: cfPackCount.count,
         downloads: cfDl.perFamily.get(key) ?? 0,
+        downloadsWeighted: Math.round(cfDl.perFamilyW.get(key) ?? 0),
         loaders: Object.fromEntries(LOADERS.map((l, i) => [l, cfLoaders[i]])) as Record<Loader, number>,
       },
       versions: versions.sort((a, b) => a.date.localeCompare(b.date)),

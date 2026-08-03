@@ -10,6 +10,9 @@ export interface PlatformStats {
   modpacks: number;
   modsApprox?: boolean;
   downloads: number;
+  /** Downloads split evenly across each project's supported versions; the
+   *  popularity score's input. Absent on `totals` (equal to downloads there). */
+  downloadsWeighted?: number;
 }
 export interface VersionEntry {
   v: string;
@@ -138,7 +141,8 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
 export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
   name: f.key,
   date: f.date,
-  downloads: total(f, 'downloads'),
+  downloads:
+    (f.cf.downloadsWeighted ?? f.cf.downloads) + (f.mr.downloadsWeighted ?? f.mr.downloads),
   mods: total(f, 'mods'),
   modpacks: total(f, 'modpacks'),
   activity: f.mr.activity,
@@ -146,7 +150,8 @@ export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
 export const versionScoreInput = (v: VersionEntry): ScoreInput => ({
   name: v.v,
   date: v.date,
-  downloads: v.cf.downloads + v.mr.downloads,
+  downloads:
+    (v.cf.downloadsWeighted ?? v.cf.downloads) + (v.mr.downloadsWeighted ?? v.mr.downloads),
   mods: v.cf.mods + v.mr.mods,
   modpacks: v.cf.modpacks + v.mr.modpacks,
   activity: v.mr.activity,
