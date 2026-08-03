@@ -310,7 +310,7 @@ body {
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 .seg button:hover:not(.on) {
   color: var(--ink);
@@ -319,6 +319,10 @@ body {
 .seg button.on {
   background: var(--grass);
   color: #fff;
+  transform: scale(1.09);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 .chart-tip {
   background: var(--surface);
