@@ -25,8 +25,8 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
   version only if it published a file for that version in the last 90 days
   (CurseForge has no date filter).
 - Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 35% +
-  mod count 30% + activity 25% + recency 10% (user-approved weights; recency
-  was toned down from 20%). Version+loader API filters match at project
+  mod count 28% + modpack count 7% + activity 25% + recency 5%
+  (user-approved weights; recency was toned down twice from 20%). Version+loader API filters match at project
   level, so impossible combos (e.g. NeoForge on 1.16) are clamped by loader
   launch dates in `familyLoaderCounts`. The "Top loader" tile weights loader
   counts by popularity score x exp(-age/4yr) so recent versions dominate but

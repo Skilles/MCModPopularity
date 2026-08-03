@@ -26,12 +26,12 @@ const topScored = popularityScores(families.map(familyScoreInput), data.generate
 const topLoader = weightedTopLoader(families, data.generatedAt);
 const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', quilt: 'Quilt' };
 ---
-<Layout title="MC Mod Popularity" generatedAt={data.generatedAt}>
+<Layout title="Minecraft Mod Popularity" generatedAt={data.generatedAt}>
   <div class="tiles">
     <div class="tile" style="--tile-accent: var(--grass)">
       <div class="k">Most popular version</div>
       <div class="v">{topScored.name}</div>
-      <div class="d">popularity score {topScored.score} / 100</div>
+      <div class="d">based on recency, quantity, downloads</div>
     </div>
     <div class="tile" style="--tile-accent: var(--gold)">
       <div class="k">Total downloads</div>

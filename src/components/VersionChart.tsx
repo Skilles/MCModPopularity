@@ -64,7 +64,18 @@ export default function VersionChart({ families, generatedAt }: {
     <div>
       <div className="card-head">
         <div>
-          <h2>{family ? `${family.key} — ${title.toLowerCase()}` : title}</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center' }}>
+            {family ? `${family.key} — ${title.toLowerCase()}` : title}
+            {isScore && (
+              <span className="info-tip" tabIndex={0} role="note" aria-label="How the popularity index works">
+                <span aria-hidden="true">i</span>
+                <span className="tip-body">
+                  A 0–100 score combining each version's downloads, how many mods and
+                  modpacks it has, how many of its mods were updated recently, and how new it is.
+                </span>
+              </span>
+            )}
+          </h2>
           <div className="note">
             {family
               ? <button className="back-btn" onClick={() => setDrill(null)}>← All versions</button>
@@ -175,6 +186,7 @@ function Tip({ active, payload, label, isScore, metric }: {
         <div className="t">{label} — score {row.score}</div>
         <div className="row">Downloads<b>{fmt(row.parts.downloads)}</b></div>
         <div className="row">Mods<b>{fmt(row.parts.mods)}</b></div>
+        <div className="row">Modpacks<b>{fmt(row.parts.modpacks)}</b></div>
         <div className="row">Recently updated<b>{Math.round(row.parts.activeShare * 100)}%</b></div>
         <div className="row">Age<b>{row.parts.ageYears < 0.1 ? 'new' : `${row.parts.ageYears.toFixed(1)}y`}</b></div>
       </div>

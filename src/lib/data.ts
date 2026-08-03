@@ -67,15 +67,16 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
 
 /**
  * 0-100 popularity index. Blend agreed with the user (recency toned down
- * from the original 20%): downloads 35% + mod count 30% + maintenance
- * activity 25% + recency 10%. Downloads/counts are log-scaled and
- * normalized within the charted set; activity is the file-accurate sampled
- * share of mods recently updated for that version; recency decays with
- * version age.
+ * twice from the original 20%): downloads 35% + mod count 28% + modpack
+ * count 7% + maintenance activity 25% + recency 5%. Downloads/counts are
+ * log-scaled and normalized within the charted set; activity is the
+ * file-accurate sampled share of mods recently updated for that version;
+ * recency decays with version age.
  */
 export interface ScoreParts {
   downloads: number;
   mods: number;
+  modpacks: number;
   activeShare: number;
   ageYears: number;
 }
@@ -90,6 +91,7 @@ interface ScoreInput {
   date: string;
   downloads: number;
   mods: number;
+  modpacks: number;
   activity: Activity;
 }
 
@@ -97,8 +99,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
   const now = new Date(generatedAt).getTime();
   const logD = rows.map((r) => Math.log10(1 + r.downloads));
   const logC = rows.map((r) => Math.log10(1 + r.mods));
+  const logP = rows.map((r) => Math.log10(1 + r.modpacks));
   const maxD = Math.max(...logD, 1);
   const maxC = Math.max(...logC, 1);
+  const maxP = Math.max(...logP, 1);
   return rows.map((r, i) => {
     // File-accurate sampled share; dampened when the sample is tiny so a
     // 5-mod version can't score 100% activity.
@@ -106,12 +110,17 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const activeShare = raw * Math.min(1, r.activity.sampled / 30);
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
-    const score =
-      100 * (0.35 * (logD[i] / maxD) + 0.3 * (logC[i] / maxC) + 0.25 * Math.min(activeShare, 1) + 0.1 * recency);
+    const score = 100 * (
+      0.35 * (logD[i] / maxD) +
+      0.28 * (logC[i] / maxC) +
+      0.07 * (logP[i] / maxP) +
+      0.25 * Math.min(activeShare, 1) +
+      0.05 * recency
+    );
     return {
       name: r.name,
       score: Math.round(score),
-      parts: { downloads: r.downloads, mods: r.mods, activeShare, ageYears },
+      parts: { downloads: r.downloads, mods: r.mods, modpacks: r.modpacks, activeShare, ageYears },
     };
   });
 }
@@ -121,6 +130,7 @@ export const familyScoreInput = (f: FamilyEntry): ScoreInput => ({
   date: f.date,
   downloads: total(f, 'downloads'),
   mods: total(f, 'mods'),
+  modpacks: total(f, 'modpacks'),
   activity: f.mr.activity,
 });
 export const versionScoreInput = (v: VersionEntry): ScoreInput => ({
@@ -128,6 +138,7 @@ export const versionScoreInput = (v: VersionEntry): ScoreInput => ({
   date: v.date,
   downloads: v.cf.downloads + v.mr.downloads,
   mods: v.cf.mods + v.mr.mods,
+  modpacks: v.cf.modpacks + v.mr.modpacks,
   activity: v.mr.activity,
 });
 

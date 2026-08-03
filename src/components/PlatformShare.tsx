@@ -43,15 +43,16 @@ export default function PlatformShare({ families, totals }: {
       <div className="hbars scroll">
         {rows.map((r) => {
           const mrPct = Math.round((r.mr / r.sum) * 100);
+          const detail = `${r.key}: CurseForge ${fmt(r.cf)} (${100 - mrPct}%) · Modrinth ${fmt(r.mr)} (${mrPct}%)`;
           return (
-            <div className="hrow with-pct" key={r.key}>
+            <div className="hrow" key={r.key}>
               <span className="lbl">{r.key}</span>
               <div className="track">
                 {r.cf > 0 && (
                   <i
                     style={{ background: 'var(--cf)', width: `${(r.cf / r.sum) * 100}%` }}
                     title={`CurseForge · ${fmt(r.cf)} (${100 - mrPct}%)`}
-                    onMouseEnter={() => setTip(`${r.key}: CurseForge ${fmt(r.cf)} · Modrinth ${fmt(r.mr)}`)}
+                    onMouseEnter={() => setTip(detail)}
                     onMouseLeave={() => setTip(null)}
                   />
                 )}
@@ -59,18 +60,17 @@ export default function PlatformShare({ families, totals }: {
                   <i
                     style={{ background: 'var(--mr)', width: `${(r.mr / r.sum) * 100}%` }}
                     title={`Modrinth · ${fmt(r.mr)} (${mrPct}%)`}
-                    onMouseEnter={() => setTip(`${r.key}: CurseForge ${fmt(r.cf)} · Modrinth ${fmt(r.mr)}`)}
+                    onMouseEnter={() => setTip(detail)}
                     onMouseLeave={() => setTip(null)}
                   />
                 )}
               </div>
-              <span className="pct">{100 - mrPct}·{mrPct}%</span>
             </div>
           );
         })}
       </div>
       <div className="note" style={{ marginTop: 14, minHeight: 20 }}>
-        {tip ?? 'Left/right numbers are the CurseForge·Modrinth split per family.'}
+        {tip ?? 'Hover a bar for exact numbers.'}
       </div>
     </div>
   );

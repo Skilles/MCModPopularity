@@ -325,9 +325,6 @@ body {
   gap: 14px;
   align-items: center;
 }
-.hrow.with-pct {
-  grid-template-columns: 52px 1fr 92px;
-}
 .hrow .lbl {
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 12.5px;
@@ -338,12 +335,6 @@ body {
   display: flex;
   gap: 2px;
   height: 20px;
-}
-.hrow .pct {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 12px;
-  color: var(--ink-2);
-  white-space: nowrap;
 }
 
 /* ---------- info tooltip ---------- */
