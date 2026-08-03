@@ -25,13 +25,14 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
       const theme = localStorage.getItem('theme')
         ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.dataset.theme = theme;
+      document.documentElement.dataset.blocks = localStorage.getItem('blocks') ?? 'off';
     </script>
   </head>
   <body>
     <div class="wrap">
       <header class="site-header">
         <div class="brand">
-          <div class="logo" aria-hidden="true">
+          <div class="logo" role="button" tabindex="0" title="Toggle block textures" aria-label="Toggle block textures">
             {Array.from({ length: 16 }).map(() => <i></i>)}
           </div>
           <h1>MC <span class="accent">Mod Popularity</span></h1>
@@ -51,6 +52,18 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
         const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
         document.documentElement.dataset.theme = next;
         localStorage.setItem('theme', next);
+      });
+
+      // Easter egg: clicking the grass-block logo toggles Minecraft bar textures.
+      const toggleBlocks = () => {
+        const next = document.documentElement.dataset.blocks === 'on' ? 'off' : 'on';
+        document.documentElement.dataset.blocks = next;
+        localStorage.setItem('blocks', next);
+      };
+      const logo = document.querySelector<HTMLElement>('.logo')!;
+      logo.addEventListener('click', toggleBlocks);
+      logo.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBlocks(); }
       });
 
       // Re-render the build-time (UTC) timestamp in the viewer's timezone.

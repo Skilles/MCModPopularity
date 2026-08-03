@@ -12,6 +12,8 @@
   --grass-alt: #58a038;
   --grass-deep: #3a7a2a;
   --dirt: #7a5537;
+  --stone: #8e8e88;
+  --moss: #41a054;
   --gold: #c98500;
   /* series (validated for light surface) */
   --cf: #eb6834;
@@ -36,6 +38,8 @@
   --grass-alt: #4b8f28;
   --grass-deep: #7cc94e;
   --dirt: #96684a;
+  --stone: #78786f;
+  --moss: #4aab52;
   --gold: #e0a520;
   /* series (validated for dark surface) */
   --cf: #d95926;
@@ -93,7 +97,11 @@ body {
   grid-template: repeat(4, 1fr) / repeat(4, 1fr);
   image-rendering: pixelated;
   flex: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
+.logo:hover { transform: scale(1.08); }
+.logo:active { transform: scale(0.96); }
 .logo i { background: var(--grass); }
 .logo i:nth-child(2), .logo i:nth-child(3) { background: var(--grass-deep); }
 .logo i:nth-child(5), .logo i:nth-child(8) { background: #63b23a; }

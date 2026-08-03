@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
@@ -25,12 +25,28 @@ interface Row {
   approx: boolean;
 }
 
+/** Tracks the data-blocks attribute the header logo toggles. */
+function useBlockTextures() {
+  const [on, setOn] = useState(
+    () => typeof document !== 'undefined' && document.documentElement.dataset.blocks === 'on',
+  );
+  useEffect(() => {
+    const el = document.documentElement;
+    setOn(el.dataset.blocks === 'on');
+    const obs = new MutationObserver(() => setOn(el.dataset.blocks === 'on'));
+    obs.observe(el, { attributes: true, attributeFilter: ['data-blocks'] });
+    return () => obs.disconnect();
+  }, []);
+  return on;
+}
+
 export default function VersionChart({ families, generatedAt }: {
   families: FamilyEntry[];
   generatedAt: string;
 }) {
   const [tab, setTab] = useState<Tab>('popularity');
   const [drill, setDrill] = useState<string | null>(null);
+  const blocks = useBlockTextures();
 
   const family = drill ? families.find((f) => f.key === drill) : undefined;
   const rows: Row[] = useMemo(() => {
@@ -125,12 +141,13 @@ export default function VersionChart({ families, generatedAt }: {
           {isScore ? (
             <Bar
               dataKey="score"
-              radius={[4, 4, 0, 0]}
+              shape={blocks ? <GrassBar /> : undefined}
+              radius={blocks ? undefined : [4, 4, 0, 0]}
               onClick={(d: Row) => !family && setDrill(d.name)}
               cursor={family ? undefined : 'pointer'}
               isAnimationActive={false}
             >
-              {rows.map((r, i) => (
+              {!blocks && rows.map((r, i) => (
                 <Cell key={r.name} fill={i % 2 ? 'var(--grass-alt)' : 'var(--grass)'} />
               ))}
               <LabelList
@@ -172,6 +189,87 @@ export default function VersionChart({ families, generatedAt }: {
         </BarChart>
       </ResponsiveContainer>
     </div>
+  );
+}
+
+/** Deterministic pseudo-random in [0, 1) — stable across re-renders so the
+ *  textures look random without flickering. */
+function rnd(a: number, b: number, c: number): number {
+  let h = (a * 374761393 + b * 668265263 + c * 1442695041) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+/**
+ * Minecraft block bar: even bars are grass-capped dirt, odd bars are
+ * moss-capped cobblestone. Every texture (body and cap) is a seeded-random
+ * pixel speckle unique to that bar.
+ */
+function GrassBar({ x, y, width, height, index }: {
+  x?: number; y?: number; width?: number; height?: number; index?: number;
+}) {
+  if (x == null || y == null || !width || !height || height <= 0) return null;
+  const i = index ?? 0;
+  const cobble = i % 2 === 1;
+  const body = cobble ? 'var(--stone)' : 'var(--dirt)';
+  const capColor = cobble ? 'var(--moss)' : 'var(--grass)';
+  const cap = Math.min(7, height);
+
+  // body speckles: darker/lighter pixels scattered on a 6px grid
+  const speckles: { px: number; py: number; s: number; f: string }[] = [];
+  const darkChance = cobble ? 0.14 : 0.1;
+  const lightChance = cobble ? 0.26 : 0.17;
+  for (let cy = cap; cy + 3 < height; cy += 6) {
+    for (let cx = 0; cx + 3 < width; cx += 6) {
+      const r = rnd(i, cx, cy);
+      if (r < darkChance || (r >= 0.5 && r < 0.5 + lightChance - darkChance)) {
+        speckles.push({
+          px: x + cx + Math.floor(rnd(i, cx + 1, cy) * 3),
+          py: y + cy + Math.floor(rnd(i, cx, cy + 1) * 3),
+          s: 2 + Math.floor(rnd(i, cx + 2, cy) * (cobble ? 4 : 3)),
+          f: r < darkChance ? 'rgba(0, 0, 0, 0.18)' : `rgba(255, 255, 255, ${cobble ? 0.09 : 0.07})`,
+        });
+      }
+    }
+  }
+
+  // cap speckles: finer 3px-grid noise on the grass/moss
+  const capSpeckles: { px: number; s: number; f: string }[] = [];
+  for (let cx = 0; cx + 2 < width; cx += 3) {
+    const r = rnd(i, cx, 9001);
+    if (r < 0.3) {
+      capSpeckles.push({
+        px: x + cx,
+        s: 2,
+        f: r < 0.15 ? 'rgba(0, 0, 0, 0.16)' : 'rgba(255, 255, 255, 0.12)',
+      });
+    }
+  }
+
+  // grass/moss "teeth" hanging below the cap, with jittered positions
+  const showTeeth = height > cap + 6 && width >= 16;
+  const teeth = showTeeth
+    ? [0.1, 0.45, 0.78].map((base, k) => ({
+        tx: x + width * (base + rnd(i, k, 7331) * 0.1),
+        tw: Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)),
+        th: 3 + Math.floor(rnd(i, k, 1717) * 3),
+      }))
+    : [];
+
+  return (
+    <g shapeRendering="crispEdges">
+      <rect x={x} y={y + cap} width={width} height={height - cap} fill={body} />
+      {speckles.map((p, k) => (
+        <rect key={k} x={p.px} y={p.py} width={p.s} height={p.s} fill={p.f} />
+      ))}
+      <rect x={x} y={y} width={width} height={cap} fill={capColor} />
+      {capSpeckles.map((p, k) => (
+        <rect key={k} x={p.px} y={y + 1 + Math.floor(rnd(i, p.px, 55) * (cap - 3))} width={p.s} height={p.s} fill={p.f} />
+      ))}
+      {teeth.map((t, k) => (
+        <rect key={k} x={t.tx} y={y + cap} width={t.tw} height={t.th} fill={capColor} />
+      ))}
+    </g>
   );
 }
 
