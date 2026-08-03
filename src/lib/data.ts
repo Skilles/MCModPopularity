@@ -66,12 +66,13 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
 // ---------------------------------------------------------------- popularity
 
 /**
- * 0-100 popularity index. Blend agreed with the user (recency toned down
- * twice from the original 20%): downloads 35% + mod count 28% + modpack
- * count 7% + maintenance activity 25% + recency 5%. Downloads/counts are
- * log-scaled and normalized within the charted set; activity is the
- * file-accurate sampled share of mods recently updated for that version;
- * recency decays with version age.
+ * 0-100 popularity index. Blend agreed with the user (recency bias reduced
+ * three times): downloads 40% + mod count 32% + modpack count 8% +
+ * maintenance activity 15% + recency 5%. Downloads use square-root scaling
+ * (log compressed legacy versions' accumulated-download advantage too much);
+ * counts stay log-scaled. Activity is the file-accurate sampled share of
+ * mods that recently shipped a file for that version. Recency decays with
+ * version age.
  */
 export interface ScoreParts {
   downloads: number;
@@ -97,10 +98,10 @@ interface ScoreInput {
 
 export function popularityScores(rows: ScoreInput[], generatedAt: string): ScoredRow[] {
   const now = new Date(generatedAt).getTime();
-  const logD = rows.map((r) => Math.log10(1 + r.downloads));
+  const rootD = rows.map((r) => Math.sqrt(r.downloads));
   const logC = rows.map((r) => Math.log10(1 + r.mods));
   const logP = rows.map((r) => Math.log10(1 + r.modpacks));
-  const maxD = Math.max(...logD, 1);
+  const maxD = Math.max(...rootD, 1);
   const maxC = Math.max(...logC, 1);
   const maxP = Math.max(...logP, 1);
   return rows.map((r, i) => {
@@ -111,10 +112,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
     const score = 100 * (
-      0.35 * (logD[i] / maxD) +
-      0.28 * (logC[i] / maxC) +
-      0.07 * (logP[i] / maxP) +
-      0.25 * Math.min(activeShare, 1) +
+      0.4 * (rootD[i] / maxD) +
+      0.32 * (logC[i] / maxC) +
+      0.08 * (logP[i] / maxP) +
+      0.15 * Math.min(activeShare, 1) +
       0.05 * recency
     );
     return {
