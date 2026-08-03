@@ -15,15 +15,20 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
 - `scripts/fetch-data.ts` (`pnpm fetch-data`) — pulls both APIs, writes
   `data/latest.json` (full dataset) and `data/snapshots/DATE.json` (slim, for
   trends). Only writes when a metric moved >= 1% vs the committed data
-  (`--force` overrides). CurseForge search caps results at 10,000; larger
-  counts are estimated from per-category partition sums divided by a
-  calibration factor (~2.3, mods carry multiple categories) measured each run
-  on slices with exact totals — flagged `modsApprox`. Downloads come from
-  global top-N sweeps plus per-family filtered sweeps, deduplicated by
-  project id. Activity is file-accurate: the top ~150 Modrinth mods per
-  family have their full version history fetched, and a mod is "active" for a
-  version only if it published a file for that version in the last 90 days
-  (CurseForge has no date filter).
+  (`--force` overrides). CurseForge search caps results at 10,000. Capped
+  family counts come exact from `data/cf-exact.json` when < 8 days old —
+  `scripts/enumerate-cf.ts` (`pnpm enumerate-cf`, weekly Sunday workflow)
+  pages every category partition of each capped family and counts the
+  deduplicated project ids (~15-20k requests). Without fresh exact data
+  (and always for capped patch-level counts), counts are estimated from
+  category-partition sums divided by the categories-per-project factor
+  measured from that run's swept projects — flagged `modsApprox`. Downloads
+  come from global top-N sweeps plus per-family filtered sweeps,
+  deduplicated by project id. Activity is file-accurate: the top ~150
+  Modrinth mods per family have their full version history fetched, and a
+  mod is "active" for a version only if it published a file for that version
+  in the last 90 days (CurseForge has no date filter). Shared script
+  plumbing lives in `scripts/shared.ts`.
 - Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 40%
   (sqrt-scaled) + mod count 32% + modpack count 8% + activity 15% +
   recency 5% (user-approved weights; recency bias reduced three times).

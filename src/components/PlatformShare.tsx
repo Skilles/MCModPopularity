@@ -34,7 +34,7 @@ export default function PlatformShare({ families, totals }: {
             <span className="info-tip" tabIndex={0} role="note" aria-label="More about this chart's data">
               <span aria-hidden="true">i</span>
               <span className="tip-body">
-                CurseForge counts above 10,000 are estimates, marked with ~.
+                A few CurseForge counts are estimates, marked with ~.
               </span>
             </span>
           </h2>

@@ -44,7 +44,7 @@ export default function VersionChart({ families, generatedAt }: {
   families: FamilyEntry[];
   generatedAt: string;
 }) {
-  const [tab, setTab] = useState<Tab>('popularity');
+  const [tab, setTab] = useState<Tab>('mods');
   const [drill, setDrill] = useState<string | null>(null);
   const blocks = useBlockTextures();
 

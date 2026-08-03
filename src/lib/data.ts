@@ -33,7 +33,10 @@ export interface Dataset {
   sweptProjects: { cf: number; mr: number };
   activeDays: number;
   activitySample: number;
-  cfOverlapFactor: { mods: number; modpacks: number };
+  /** ISO date of the exact-count enumeration in effect, or null if counts
+   *  over the CurseForge cap were estimated this run. */
+  cfExactFrom: string | null;
+  cfCategoryFactor: { mods: number; modpacks: number };
   totals: { cf: PlatformStats; mr: PlatformStats };
   families: FamilyEntry[];
 }

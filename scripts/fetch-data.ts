@@ -7,27 +7,25 @@
  * Files are only written when any headline metric moved >= 1% since the
  * last committed dataset (pass --force to write regardless).
  *
+ * CurseForge counts over the 10k search cap come from data/cf-exact.json
+ * (weekly ID-level enumeration, exact) when fresh; otherwise they are
+ * estimated from category-partition sums divided by the category-per-mod
+ * factor measured on this run's swept projects, and flagged `modsApprox`.
+ *
  * Requires CURSEFORGE_API_KEY (read from env, falling back to .env).
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_DIR = resolve(ROOT, "data");
-const SNAPSHOT_DIR = resolve(DATA_DIR, "snapshots");
-const LATEST_PATH = resolve(DATA_DIR, "latest.json");
+import { resolve } from "node:path";
+import {
+  CF_CAP, CF_LOADERS, CLASS_MODS, CLASS_MODPACKS, LATEST_PATH, LOADERS, MODRINTH,
+  SNAPSHOT_DIR, cfSearchFactory, familyOf, fetchCfCategoryIds, fetchCfTypeIds,
+  fetchReleaseFamilies, makeCfClient, makeMrClient, readCfExact,
+  type CfSearch, type Loader,
+} from "./shared";
 
 const FORCE = process.argv.includes("--force");
 const THRESHOLD = 0.01;
 
-const MODRINTH = "https://api.modrinth.com/v2";
-const CURSEFORGE = "https://api.curseforge.com/v1";
-const MC_GAME_ID = 432;
-const CLASS_MODS = 6;
-const CLASS_MODPACKS = 4471;
-/** CurseForge search results are hard-capped at this count. */
-const CF_CAP = 10_000;
 /** Global sweep depth (top projects by downloads). */
 const SWEEP_MODS = 10_000;
 const SWEEP_MODPACKS = 5_000;
@@ -40,60 +38,10 @@ const ACTIVE_DAYS = 90;
 /** Top Modrinth mods per family whose full file history is fetched for the
  *  file-accurate activity metric (deduped across families before fetching). */
 const ACTIVITY_SAMPLE = 150;
-/** How many exact (<10k) slices to measure the category-overlap factor on. */
-const CALIBRATION_SAMPLES = 3;
 
-const CF_LOADERS = { forge: 1, fabric: 4, quilt: 5, neoforge: 6 } as const;
-type Loader = keyof typeof CF_LOADERS;
-const LOADERS = Object.keys(CF_LOADERS) as Loader[];
-
-// ---------------------------------------------------------------- env / http
-
-function loadDotEnv() {
-  const path = resolve(ROOT, ".env");
-  if (!existsSync(path)) return;
-  for (const line of readFileSync(path, "utf8").split(/\r?\n/)) {
-    const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
-    if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2];
-  }
-}
-loadDotEnv();
-
-const CF_KEY = process.env.CURSEFORGE_API_KEY;
-if (!CF_KEY) {
-  console.error("CURSEFORGE_API_KEY is not set (env or .env)");
-  process.exit(1);
-}
-
-/** Serial request queue per host with a fixed delay, retries on 429/5xx. */
-function makeClient(headers: Record<string, string>, delayMs: number) {
-  let chain = Promise.resolve();
-  return function request<T>(url: string): Promise<T> {
-    const result = chain.then(async () => {
-      for (let attempt = 0; ; attempt++) {
-        const res = await fetch(url, { headers, signal: AbortSignal.timeout(30_000) }).catch((e) => {
-          if (attempt >= 4) throw e;
-          return null;
-        });
-        if (res?.ok) return (await res.json()) as T;
-        if (res && res.status < 500 && res.status !== 429) {
-          throw new Error(`${res.status} ${res.statusText}: ${url}`);
-        }
-        if (attempt >= 4) throw new Error(`giving up after ${attempt + 1} tries: ${url}`);
-        await sleep(1500 * (attempt + 1));
-      }
-    });
-    chain = result.then(() => sleep(delayMs), () => sleep(delayMs));
-    return result;
-  };
-}
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-const mr = makeClient(
-  { "User-Agent": "Skilles/MCModPopularity/1.0 (github.com/Skilles/MCModPopularity)" },
-  220,
-);
-const cf = makeClient({ "x-api-key": CF_KEY, "Accept": "application/json" }, 120);
+const mr = makeMrClient();
+const cf = makeCfClient();
+const { cfSearch, cfCount } = cfSearchFactory(cf);
 
 // ------------------------------------------------------------------- shapes
 
@@ -102,7 +50,7 @@ interface PlatformStats {
   mods: number;
   modpacks: number;
   /** True when a CurseForge count exceeded the 10k cap and was estimated
-   *  from category partitions calibrated against exact slices. */
+   *  (no fresh exact enumeration available for it). */
   modsApprox?: boolean;
   /** Downloads summed over the deduped sweeps, mods + modpacks. */
   downloads: number;
@@ -119,11 +67,8 @@ interface FamilyEntry {
   versions: { v: string; date: string; cf: PlatformStats; mr: PlatformStats & { activity: Activity } }[];
 }
 
-/** "1.20.1" -> "1.20", "26.1.2" -> "26.1", "1.21" -> "1.21" */
-const familyOf = (v: string) => v.split(".").slice(0, 2).join(".");
-
 /** Swept projects deduped by id across the global and per-family sweeps. */
-interface SweptProject { downloads: number; versions: Set<string> }
+interface SweptProject { downloads: number; versions: Set<string>; categories: number; classId?: number }
 
 /**
  * Raw attribution credits a project's full downloads to every version it
@@ -156,7 +101,6 @@ function attribute(projects: Map<string | number, SweptProject>, releaseSet: Set
 
 // ------------------------------------------------------------------ modrinth
 
-interface MrTag { version: string; version_type: string; date: string }
 interface MrSearch { total_hits: number; hits: MrHit[] }
 interface MrHit { project_id: string; downloads: number; versions: string[] }
 interface MrVersionFile { game_versions: string[]; date_published: string }
@@ -181,7 +125,11 @@ async function mrSweepInto(
     ).catch(() => null);
     if (!page || page.hits.length === 0) break;
     for (const hit of page.hits) {
-      out.set(hit.project_id, { downloads: hit.downloads, versions: new Set(hit.versions) });
+      out.set(hit.project_id, {
+        downloads: hit.downloads,
+        versions: new Set(hit.versions),
+        categories: 0,
+      });
       orderedIds?.push(hit.project_id);
     }
   }
@@ -217,40 +165,47 @@ async function fetchProjectActivity(ids: Set<string>, activeSinceIso: string) {
 
 // ---------------------------------------------------------------- curseforge
 
-interface CfSearch { data: CfMod[]; pagination: { totalCount: number } }
-interface CfMod { id: number; downloadCount: number; latestFilesIndexes: { gameVersion: string }[] }
-interface CfVersionType { id: number; name: string }
-interface CfCategory { id: number; name: string }
-
-const cfSearch = (params: Record<string, string | number>) => {
-  const q = new URLSearchParams({ gameId: String(MC_GAME_ID) });
-  for (const [k, v] of Object.entries(params)) q.set(k, String(v));
-  return cf<CfSearch>(`${CURSEFORGE}/mods/search?${q}`);
-};
-const cfCount = async (params: Record<string, string | number>) =>
-  (await cfSearch({ ...params, pageSize: 1 })).pagination.totalCount;
-
-/** Per-class category ids and the measured category-overlap factor
- *  (mods carry ~2.3 categories on average, so partition sums overcount). */
 const cfCategories = new Map<number, number[]>();
-const cfOverlapFactor = new Map<number, number>();
 
-async function cfLoadCategories(classId: number) {
-  const cats = await cf<{ data: CfCategory[] }>(
-    `${CURSEFORGE}/categories?gameId=${MC_GAME_ID}&classId=${classId}`,
-  );
-  cfCategories.set(classId, cats.data.map((c) => c.id));
+/**
+ * Category-per-project factor, measured per (class, family) from this run's
+ * swept projects — capped counts are estimated as categorySum / factor.
+ * Falls back to the class-wide sweep average when a family's sample is thin.
+ */
+const catFactor = new Map<string, { sum: number; n: number }>();
+const FACTOR_MIN_SAMPLE = 100;
+
+function recordCatFactors(projects: Map<string | number, SweptProject>, releaseSet: Set<string>) {
+  for (const p of projects.values()) {
+    if (!p.categories || p.classId === undefined) continue;
+    const keys = [`${p.classId}:*`];
+    for (const f of new Set([...p.versions].filter((v) => releaseSet.has(v)).map(familyOf))) {
+      keys.push(`${p.classId}:${f}`);
+    }
+    for (const k of keys) {
+      const e = catFactor.get(k) ?? { sum: 0, n: 0 };
+      e.sum += p.categories;
+      e.n++;
+      catFactor.set(k, e);
+    }
+  }
+}
+
+function factorFor(classId: number, familyKey?: string) {
+  const fam = familyKey ? catFactor.get(`${classId}:${familyKey}`) : undefined;
+  const pick = fam && fam.n >= FACTOR_MIN_SAMPLE ? fam : catFactor.get(`${classId}:*`);
+  return pick && pick.n > 0 ? pick.sum / pick.n : 2.3;
 }
 
 async function cfCategorySum(params: Record<string, string | number>, classId: number) {
   let sum = 0;
   for (const catId of cfCategories.get(classId)!) {
-    let n = await cfCount({ ...params, categoryId: catId });
+    let n = await cfCount({ ...params, classId, categoryId: catId });
     if (n >= CF_CAP && !("modLoaderType" in params)) {
       // rare: a single category over 10k — sub-partition by loader
       n = 0;
       for (const id of Object.values(CF_LOADERS)) {
-        n += Math.min(await cfCount({ ...params, categoryId: catId, modLoaderType: id }), CF_CAP);
+        n += Math.min(await cfCount({ ...params, classId, categoryId: catId, modLoaderType: id }), CF_CAP);
       }
     }
     sum += Math.min(n, CF_CAP);
@@ -259,35 +214,18 @@ async function cfCategorySum(params: Record<string, string | number>, classId: n
 }
 
 /**
- * Measure the category-overlap factor per class on slices with exact totals:
- * factor = (sum of per-category counts) / (true total). Applied to estimate
- * capped counts from their category sums.
- */
-async function cfCalibrate(classId: number, versions: string[]) {
-  const factors: number[] = [];
-  for (const v of versions) {
-    if (factors.length >= CALIBRATION_SAMPLES) break;
-    const exact = await cfCount({ classId, gameVersion: v });
-    if (exact < 500 || exact >= CF_CAP * 0.95) continue;
-    const sum = await cfCategorySum({ classId, gameVersion: v }, classId);
-    if (sum > 0) factors.push(sum / exact);
-  }
-  const factor = factors.length
-    ? factors.reduce((a, b) => a + b, 0) / factors.length
-    : 2.3; // fallback near the measured typical value
-  cfOverlapFactor.set(classId, factor);
-  console.log(`  class ${classId} category-overlap factor: ${factor.toFixed(2)} (${factors.length} samples)`);
-}
-
-/**
  * Exact when under the 10k cap; otherwise estimated from category-partition
- * sums divided by the measured overlap factor.
+ * sums divided by the sweep-measured category factor.
  */
-async function cfCountUncapped(params: Record<string, string | number>, classId: number) {
+async function cfCountUncapped(
+  params: Record<string, string | number>,
+  classId: number,
+  familyKey?: string,
+) {
   const total = await cfCount({ ...params, classId });
   if (total < CF_CAP) return { count: total, approx: false };
-  const sum = await cfCategorySum({ ...params, classId }, classId);
-  const factor = cfOverlapFactor.get(classId)!;
+  const sum = await cfCategorySum(params, classId);
+  const factor = factorFor(classId, familyKey);
   return { count: Math.max(Math.round(sum / factor), CF_CAP), approx: true };
 }
 
@@ -295,16 +233,19 @@ async function cfSweepInto(
   out: Map<string | number, SweptProject>,
   params: Record<string, string | number>,
   top: number,
+  classId: number,
 ) {
   const pageSize = 50;
   for (let index = 0; index + pageSize <= Math.min(top, CF_CAP); index += pageSize) {
-    const page = await cfSearch({ ...params, sortField: 6, sortOrder: "desc", pageSize, index })
-      .catch(() => null);
+    const page = await cfSearch({ ...params, classId, sortField: 6, sortOrder: "desc", pageSize, index })
+      .catch((): CfSearch | null => null);
     if (!page || page.data.length === 0) break;
     for (const mod of page.data) {
       out.set(mod.id, {
         downloads: mod.downloadCount,
         versions: new Set(mod.latestFilesIndexes.map((f) => f.gameVersion)),
+        categories: new Set(mod.categories.map((c) => c.id)).size,
+        classId,
       });
     }
   }
@@ -314,35 +255,19 @@ async function cfSweepInto(
 
 async function main() {
   console.log("Fetching Minecraft release versions from Modrinth...");
-  const tags = await mr<MrTag[]>(`${MODRINTH}/tag/game_version`);
-  const releases = tags.filter((t) => t.version_type === "release");
+  const { releases, families } = await fetchReleaseFamilies(mr);
   const releaseSet = new Set(releases.map((t) => t.version));
-  const families = new Map<string, MrTag[]>();
-  for (const t of releases) {
-    const f = familyOf(t.version);
-    if (!families.has(f)) families.set(f, []);
-    families.get(f)!.push(t);
-  }
   console.log(`${releases.length} release versions in ${families.size} families`);
 
   console.log("Fetching CurseForge version types and categories...");
-  const versionTypes = (await cf<{ data: CfVersionType[] }>(
-    `${CURSEFORGE}/games/${MC_GAME_ID}/version-types`,
-  )).data;
-  const cfTypeId = new Map<string, number>();
-  for (const vt of versionTypes) {
-    const m = vt.name.match(/^Minecraft ([\d.]+)$/);
-    if (m) cfTypeId.set(m[1], vt.id);
-  }
-  await cfLoadCategories(CLASS_MODS);
-  await cfLoadCategories(CLASS_MODPACKS);
+  const cfTypeId = await fetchCfTypeIds(cf);
+  cfCategories.set(CLASS_MODS, await fetchCfCategoryIds(cf, CLASS_MODS));
+  cfCategories.set(CLASS_MODPACKS, await fetchCfCategoryIds(cf, CLASS_MODPACKS));
 
-  console.log("Calibrating CurseForge category-overlap factors...");
-  // Spread candidate slices across eras; cfCalibrate keeps the first few
-  // whose exact totals are usable.
-  const calibrationPool = releases.filter((_, i) => i % 4 === 0).map((t) => t.version);
-  await cfCalibrate(CLASS_MODS, calibrationPool);
-  await cfCalibrate(CLASS_MODPACKS, calibrationPool);
+  const cfExact = readCfExact();
+  console.log(cfExact
+    ? `Using exact CurseForge counts from ${cfExact.updatedAt.slice(0, 10)}`
+    : "No fresh cf-exact.json — capped counts will be estimated");
 
   const activeSinceIso = new Date(Date.now() - ACTIVE_DAYS * 86_400_000).toISOString();
 
@@ -363,19 +288,21 @@ async function main() {
     }
   })();
   const cfSweeps = (async () => {
-    await cfSweepInto(cfProjects, { classId: CLASS_MODS }, SWEEP_MODS);
-    await cfSweepInto(cfProjects, { classId: CLASS_MODPACKS }, SWEEP_MODPACKS);
+    await cfSweepInto(cfProjects, {}, SWEEP_MODS, CLASS_MODS);
+    await cfSweepInto(cfProjects, {}, SWEEP_MODPACKS, CLASS_MODPACKS);
     for (const [key] of families) {
       const typeId = cfTypeId.get(key);
       if (!typeId) continue;
-      await cfSweepInto(cfProjects, { classId: CLASS_MODS, gameVersionTypeId: typeId }, FAMILY_SWEEP_MODS);
-      await cfSweepInto(cfProjects, { classId: CLASS_MODPACKS, gameVersionTypeId: typeId }, FAMILY_SWEEP_MODPACKS);
+      await cfSweepInto(cfProjects, { gameVersionTypeId: typeId }, FAMILY_SWEEP_MODS, CLASS_MODS);
+      await cfSweepInto(cfProjects, { gameVersionTypeId: typeId }, FAMILY_SWEEP_MODPACKS, CLASS_MODPACKS);
     }
   })();
   await Promise.all([mrSweeps, cfSweeps]);
   const mrDl = attribute(mrProjects, releaseSet);
   const cfDl = attribute(cfProjects, releaseSet);
+  recordCatFactors(cfProjects, releaseSet);
   console.log(`  swept ${cfDl.projects} CurseForge / ${mrDl.projects} Modrinth projects`);
+  console.log(`  measured category factors: mods ${factorFor(CLASS_MODS).toFixed(2)}, modpacks ${factorFor(CLASS_MODPACKS).toFixed(2)}`);
 
   console.log("Fetching file-level activity for sampled Modrinth mods...");
   const sampleIds = new Set<string>();
@@ -413,6 +340,7 @@ async function main() {
       ? { gameVersionTypeId: typeId }
       : { gameVersion: key }; // fallback: exact-tag match undercounts the family
     const sampleFrame = familyTopIds.get(key) ?? [];
+    const exact = cfExact?.families[key];
 
     const [mrModCount, mrPackCount, mrLoaders, cfModCount, cfPackCount, cfLoaders] =
       await Promise.all([
@@ -420,18 +348,22 @@ async function main() {
         mrCount([typeFacet("modpack"), versionsFacet(vs)]),
         Promise.all(LOADERS.map((l) =>
           mrCount([typeFacet("mod"), versionsFacet(vs), [`categories:${l}`]]))),
-        cfCountUncapped(cfFamilyParams, CLASS_MODS),
-        cfCountUncapped(cfFamilyParams, CLASS_MODPACKS),
+        exact?.mods != null
+          ? Promise.resolve({ count: exact.mods, approx: false })
+          : cfCountUncapped(cfFamilyParams, CLASS_MODS, key),
+        exact?.modpacks != null
+          ? Promise.resolve({ count: exact.modpacks, approx: false })
+          : cfCountUncapped(cfFamilyParams, CLASS_MODPACKS, key),
         Promise.all(LOADERS.map(async (l) =>
-          (await cfCountUncapped({ ...cfFamilyParams, modLoaderType: CF_LOADERS[l] }, CLASS_MODS)).count)),
+          (await cfCountUncapped({ ...cfFamilyParams, modLoaderType: CF_LOADERS[l] }, CLASS_MODS, key)).count)),
       ]);
 
     const versions = await Promise.all(members.map(async (m) => {
       const [mrM, mrP, cfM, cfP] = await Promise.all([
         mrCount([typeFacet("mod"), versionsFacet([m.version])]),
         mrCount([typeFacet("modpack"), versionsFacet([m.version])]),
-        cfCountUncapped({ gameVersion: m.version }, CLASS_MODS),
-        cfCountUncapped({ gameVersion: m.version }, CLASS_MODPACKS),
+        cfCountUncapped({ gameVersion: m.version }, CLASS_MODS, key),
+        cfCountUncapped({ gameVersion: m.version }, CLASS_MODPACKS, key),
       ]);
       return {
         v: m.version,
@@ -466,7 +398,7 @@ async function main() {
       },
       cf: {
         mods: cfModCount.count,
-        ...(cfModCount.approx ? { modsApprox: true } : {}),
+        ...(cfModCount.approx || cfPackCount.approx ? { modsApprox: true } : {}),
         modpacks: cfPackCount.count,
         downloads: cfDl.perFamily.get(key) ?? 0,
         downloadsWeighted: Math.round(cfDl.perFamilyW.get(key) ?? 0),
@@ -484,9 +416,10 @@ async function main() {
     sweptProjects: { cf: cfDl.projects, mr: mrDl.projects },
     activeDays: ACTIVE_DAYS,
     activitySample: ACTIVITY_SAMPLE,
-    cfOverlapFactor: {
-      mods: +cfOverlapFactor.get(CLASS_MODS)!.toFixed(3),
-      modpacks: +cfOverlapFactor.get(CLASS_MODPACKS)!.toFixed(3),
+    cfExactFrom: cfExact?.updatedAt ?? null,
+    cfCategoryFactor: {
+      mods: +factorFor(CLASS_MODS).toFixed(3),
+      modpacks: +factorFor(CLASS_MODPACKS).toFixed(3),
     },
     totals: {
       cf: {

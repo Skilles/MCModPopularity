@@ -1,0 +1,44 @@
+name: Exact counts
+
+on:
+  schedule:
+    - cron: "0 4 * * 0" # Sundays, before the daily 06:00 data refresh
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: enumerate
+  cancel-in-progress: false
+
+jobs:
+  enumerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Enumerate exact CurseForge counts
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: pnpm enumerate-cf
+
+      - name: Commit exact counts
+        run: |
+          if [[ -n "$(git status --porcelain data)" ]]; then
+            git config user.name "Bilal Madi"
+            git config user.email "bilal@bilalmadi.com"
+            git add data/cf-exact.json
+            git commit -m "Update exact counts $(date -u +%F)"
+            git pull --rebase
+            git push
+          fi
