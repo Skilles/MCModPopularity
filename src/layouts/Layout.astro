@@ -58,7 +58,7 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
       const ts = new Date(updatedEl.dataset.ts!);
       if (!Number.isNaN(ts.getTime())) {
         updatedEl.textContent = 'UPDATED ' + ts
-          .toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+          .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
           .toUpperCase();
       }
     </script>
