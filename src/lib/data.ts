@@ -72,16 +72,17 @@ export function chartFamilies(data: Dataset, minMods = 100): FamilyEntry[] {
 // ---------------------------------------------------------------- popularity
 
 /**
- * 0-100 popularity index. Blend agreed with the user (recency bias reduced
- * three times): downloads 40% + mod count 32% + modpack count 8% +
- * maintenance activity 15% + recency 5%. Downloads use square-root scaling
- * (log compressed legacy versions' accumulated-download advantage too much);
+ * 0-100 popularity index: downloads 34% + mod count 30% + modpack count 16%
+ * + maintenance activity 20%. Downloads use square-root scaling (log
+ * compressed legacy versions' accumulated-download advantage too much);
  * counts stay log-scaled. Activity is the file-accurate sampled share of
- * mods that recently shipped a file for that version. Recency decays with
- * version age. The blended scores are then min-max rescaled within the
- * scored set, so the weakest version reads 0 and the strongest 100 — the
- * index is explicitly relative to today's chart (and, in drill-down,
- * relative to the family's own patches).
+ * mods that recently shipped a file for that version.
+ *
+ * Blended scores are min-max rescaled within the set passed in, so the
+ * weakest reads 0 and the strongest 100. Callers decide the comparison set:
+ * families are scored against families, and patch versions against *every*
+ * patch version site-wide (drill-down then shows one family's slice of that
+ * scale), so patches from different families stay comparable.
  */
 export interface ScoreParts {
   downloads: number;
@@ -121,10 +122,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
     const blend =
-      0.34 * (rootD[i] / maxD) +
-      0.30 * (logC[i] / maxC) +
-      0.16 * (logP[i] / maxP) +
-      0.2 * Math.min(activeShare, 1)
+      0.33 * (rootD[i] / maxD) +
+      0.31 * (logC[i] / maxC) +
+      0.17 * (logP[i] / maxP) +
+      0.19 * Math.min(activeShare, 1)
     return {
       name: r.name,
       blend,
@@ -196,7 +197,7 @@ export function weightedTopLoader(families: FamilyEntry[], generatedAt: string) 
   const weighted = Object.fromEntries(LOADERS.map((l) => [l, 0])) as Record<Loader, number>;
   for (const f of families) {
     const ageYears = Math.max(0, (now - new Date(f.date).getTime()) / (365.25 * 86_400_000));
-    const w = (scores.get(f.key) ?? 0) * Math.exp(-ageYears / 4);
+    const w = (scores.get(f.key) ?? 0) * Math.exp(-ageYears / 5);
     const counts = familyLoaderCounts(f);
     for (const l of LOADERS) weighted[l] += w * counts[l];
   }

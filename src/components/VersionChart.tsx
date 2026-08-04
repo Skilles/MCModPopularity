@@ -52,8 +52,11 @@ export default function VersionChart({ families, generatedAt }: {
   const family = drill ? families.find((f) => f.key === drill) : undefined;
   const rows: Row[] = useMemo(() => {
     if (tab === 'popularity') {
+      // Patch versions are scored against every patch version site-wide, not
+      // just their own family's, so 1.20.1 and 1.12.2 stay comparable.
       const scored = family
-        ? popularityScores(family.versions.map(versionScoreInput), generatedAt)
+        ? popularityScores(families.flatMap((f) => f.versions).map(versionScoreInput), generatedAt)
+            .filter((s) => family.versions.some((v) => v.v === s.name))
         : popularityScores(families.map(familyScoreInput), generatedAt);
       return scored.map((s) => ({
         name: s.name, cf: 0, mr: 0, total: s.score, score: s.score, parts: s.parts, approx: false,
