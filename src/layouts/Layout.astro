@@ -10,7 +10,7 @@ const updated = new Date(generatedAt).toLocaleDateString('en-US', {
   month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
 }).toUpperCase();
 const description =
-  'The most popular Minecraft versions and mod loaders, measured by mod and modpack counts and downloads on CurseForge and Modrinth. Updated daily.';
+  'The most popular Minecraft versions and mod loaders on CurseForge and Modrinth. Updated daily.';
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pageUrl = new URL(`${basePath}/`, Astro.site);
 const ogImage = new URL(`${basePath}/og.png`, Astro.site);
@@ -21,6 +21,8 @@ const ogImage = new URL(`${basePath}/og.png`, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:site_name" content="MC Mod Popularity" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -28,10 +30,12 @@ const ogImage = new URL(`${basePath}/og.png`, Astro.site);
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="675" />
+    <meta property="og:image:alt" content="MC Mod Popularity — grass-block logo and site name in Minecraft pixel style" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content="MC Mod Popularity — grass-block logo and site name in Minecraft pixel style" />
     <link rel="icon" type="image/svg+xml" href={`${basePath}/favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,7 +58,7 @@ const ogImage = new URL(`${basePath}/og.png`, Astro.site);
           <h1>MC <span class="accent">Mod Popularity</span></h1>
         </div>
         <div class="header-right">
-          <div class="updated" data-ts={generatedAt}>UPDATED {updated}</div>
+          <time class="updated" datetime={generatedAt} data-ts={generatedAt}>UPDATED {updated}</time>
           <button class="theme-toggle blocks-toggle" aria-label="Toggle block textures" title="Toggle block textures">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <rect x="1" y="3" width="14" height="4" fill="var(--grass)" />
