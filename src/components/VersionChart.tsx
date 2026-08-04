@@ -132,6 +132,7 @@ export default function VersionChart({ families, generatedAt }: {
             tickLine={false}
             axisLine={{ stroke: 'var(--baseline)', strokeWidth: 2 }}
             tick={{ fill: 'var(--muted)', fontSize: 12.5, fontFamily: 'IBM Plex Mono, monospace' }}
+            tickFormatter={(v: string) => (family ? v : `${v}.x`)}
             interval={rows.length > 20 ? 1 : 0}
             angle={rows.length > 14 ? -38 : 0}
             height={rows.length > 14 ? 52 : 34}
@@ -147,7 +148,7 @@ export default function VersionChart({ families, generatedAt }: {
             tickFormatter={fmt}
             width={48}
           />
-          <Tooltip cursor={{ fill: 'var(--ring)' }} content={<Tip isScore={isScore} metric={tab} blocks={blocks} />} isAnimationActive={false} />
+          <Tooltip cursor={{ fill: 'var(--ring)' }} content={<Tip isScore={isScore} metric={tab} blocks={blocks} labelSuffix={family ? '' : '.x'} />} isAnimationActive={false} />
           {isScore ? (
             <Bar
               dataKey="score"
@@ -412,20 +413,21 @@ function GrassSegBar({ x, y, width, height, index, payload, sqrtScale }: {
   );
 }
 
-function Tip({ active, payload, label, isScore, metric, blocks }: {
+function Tip({ active, payload, label, isScore, metric, blocks, labelSuffix = '' }: {
   active?: boolean;
   payload?: { payload: Row }[];
   label?: string;
   isScore: boolean;
   metric: Tab;
   blocks?: boolean;
+  labelSuffix?: string;
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload;
   if (isScore && row.parts) {
     return (
       <div className="chart-tip">
-        <div className="t">{label} — score {row.score}</div>
+        <div className="t">{label}{labelSuffix} — score {row.score}</div>
         <div className="row">Downloads<b>{fmt(row.parts.downloads)}</b></div>
         <div className="row">Mods<b>{fmt(row.parts.mods)}</b></div>
         <div className="row">Modpacks<b>{fmt(row.parts.modpacks)}</b></div>
@@ -437,7 +439,7 @@ function Tip({ active, payload, label, isScore, metric, blocks }: {
   const suffix = row.approx ? ' (est.)' : '';
   return (
     <div className="chart-tip">
-      <div className="t">{label}</div>
+      <div className="t">{label}{labelSuffix}</div>
       <div className="row"><i style={{ background: blocks ? 'var(--dirt)' : 'var(--cf)' }} />CurseForge<b>{fmt(row.cf)}{suffix}</b></div>
       <div className="row"><i style={{ background: blocks ? 'var(--grass)' : 'var(--mr)' }} />Modrinth<b>{fmt(row.mr)}</b></div>
       <div className="row" style={{ marginTop: 2 }}>Total {metric}<b>{fmt(row.total)}</b></div>

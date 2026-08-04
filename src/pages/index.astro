@@ -6,7 +6,7 @@ import LoaderChart from '../components/LoaderChart.tsx';
 import PlatformShare from '../components/PlatformShare.tsx';
 import TrendChart from '../components/TrendChart.tsx';
 import {
-  chartFamilies, familyScoreInput, fmt, popularityScores, weightedTopLoader,
+  chartFamilies, fmt, popularityScores, versionScoreInput, weightedTopLoader,
   type Dataset, type Snapshot,
 } from '../lib/data';
 import dataset from '../../data/latest.json';
@@ -21,8 +21,11 @@ const totalDownloads = data.totals.cf.downloads + data.totals.mr.downloads;
 const totalProjects =
   data.totals.cf.mods + data.totals.cf.modpacks + data.totals.mr.mods + data.totals.mr.modpacks;
 
-const topScored = popularityScores(families.map(familyScoreInput), data.generatedAt)
-  .sort((a, b) => b.score - a.score)[0];
+// Most popular patch version, scored against every other patch version.
+const topScored = popularityScores(
+  families.flatMap((f) => f.versions).map(versionScoreInput),
+  data.generatedAt,
+).sort((a, b) => b.score - a.score)[0];
 const topLoader = weightedTopLoader(families, data.generatedAt);
 const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', quilt: 'Quilt' };
 ---
