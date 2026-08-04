@@ -294,10 +294,12 @@ body {
 .legend button.chip.off span { text-decoration: line-through; }
 
 /* chart bar hover (Recharts SVG) */
-.recharts-bar-rectangle path {
+.recharts-bar-rectangle path,
+.recharts-bar-rectangle g {
   transition: filter 0.15s ease;
 }
-.recharts-bar-rectangle:hover path {
+.recharts-bar-rectangle:hover path,
+.recharts-bar-rectangle:hover g {
   filter: brightness(1.12) saturate(1.05);
 }
 /* no focus ring when clicking around the chart */
@@ -384,6 +386,26 @@ body {
   padding: 2px 0;
 }
 .back-btn:hover { text-decoration: underline; }
+.scale-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.scale-toggle button {
+  all: unset;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+.scale-toggle button:hover { color: var(--ink); }
+.scale-toggle button.on {
+  color: var(--grass-deep);
+  font-weight: 600;
+}
 .empty-note {
   color: var(--muted);
   font-size: 14.5px;

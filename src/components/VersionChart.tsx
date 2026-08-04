@@ -25,11 +25,11 @@ interface Row {
   approx: boolean;
 }
 
-/** Tracks the data-blocks attribute the header logo toggles. */
+/** Tracks the data-blocks attribute the header logo toggles. Starts false to
+ *  match the server-rendered HTML (hydration never patches attribute
+ *  mismatches); the effect flips it on right after mount. */
 function useBlockTextures() {
-  const [on, setOn] = useState(
-    () => typeof document !== 'undefined' && document.documentElement.dataset.blocks === 'on',
-  );
+  const [on, setOn] = useState(false);
   useEffect(() => {
     const el = document.documentElement;
     setOn(el.dataset.blocks === 'on');
@@ -46,6 +46,7 @@ export default function VersionChart({ families, generatedAt }: {
 }) {
   const [tab, setTab] = useState<Tab>('mods');
   const [drill, setDrill] = useState<string | null>(null);
+  const [trueScale, setTrueScale] = useState(true);
   const blocks = useBlockTextures();
 
   const family = drill ? families.find((f) => f.key === drill) : undefined;
@@ -72,6 +73,13 @@ export default function VersionChart({ families, generatedAt }: {
 
   const showLabels = rows.length <= 14;
   const isScore = tab === 'popularity';
+  // Auto ticks cluster near the top on a sqrt scale; use ticks that sit
+  // evenly spaced on it instead (quadratic fractions of a rounded-up max).
+  const maxTotal = Math.max(...rows.map((r) => r.total), 1);
+  const tickTop = niceCeil(maxTotal);
+  const sqrtTicks = !isScore && !trueScale
+    ? [...new Set([0, ...[1 / 16, 4 / 16, 9 / 16].map((f) => niceTick(f * tickTop)), tickTop])]
+    : undefined;
   const title = isScore
     ? 'Popularity index'
     : TABS.find((t) => t.key === tab)!.label + ' per Minecraft version';
@@ -103,8 +111,8 @@ export default function VersionChart({ families, generatedAt }: {
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
           {!isScore && (
             <div className="legend">
-              <span><i style={{ background: 'var(--cf)' }} />CurseForge</span>
-              <span><i style={{ background: 'var(--mr)' }} />Modrinth</span>
+              <span><i style={{ background: blocks ? 'var(--dirt)' : 'var(--cf)' }} />CurseForge</span>
+              <span><i style={{ background: blocks ? 'var(--grass)' : 'var(--mr)' }} />Modrinth</span>
             </div>
           )}
           <div className="seg">
@@ -132,12 +140,14 @@ export default function VersionChart({ families, generatedAt }: {
           <YAxis
             tickLine={false}
             axisLine={false}
-            domain={isScore ? [0, 100] : undefined}
+            scale={isScore || trueScale ? 'linear' : 'sqrt'}
+            domain={isScore ? [0, 100] : sqrtTicks ? [0, sqrtTicks[sqrtTicks.length - 1]] : [0, 'auto']}
+            ticks={sqrtTicks}
             tick={{ fill: 'var(--muted)', fontSize: 12.5, fontFamily: 'IBM Plex Mono, monospace' }}
             tickFormatter={fmt}
             width={48}
           />
-          <Tooltip cursor={{ fill: 'var(--ring)' }} content={<Tip isScore={isScore} metric={tab} />} isAnimationActive={false} />
+          <Tooltip cursor={{ fill: 'var(--ring)' }} content={<Tip isScore={isScore} metric={tab} blocks={blocks} />} isAnimationActive={false} />
           {isScore ? (
             <Bar
               dataKey="score"
@@ -162,6 +172,7 @@ export default function VersionChart({ families, generatedAt }: {
                 dataKey="cf"
                 stackId="a"
                 fill="var(--cf)"
+                shape={blocks ? <DirtBar /> : undefined}
                 onClick={(d: Row) => !family && setDrill(d.name)}
                 cursor={family ? undefined : 'pointer'}
                 isAnimationActive={false}
@@ -170,7 +181,8 @@ export default function VersionChart({ families, generatedAt }: {
                 dataKey="mr"
                 stackId="a"
                 fill="var(--mr)"
-                radius={[4, 4, 0, 0]}
+                shape={blocks ? <GrassSegBar sqrtScale={!trueScale} /> : undefined}
+                radius={blocks ? undefined : [4, 4, 0, 0]}
                 onClick={(d: Row) => !family && setDrill(d.name)}
                 cursor={family ? undefined : 'pointer'}
                 isAnimationActive={false}
@@ -188,8 +200,48 @@ export default function VersionChart({ families, generatedAt }: {
           )}
         </BarChart>
       </ResponsiveContainer>
+      {!isScore && (
+        <div className="scale-toggle">
+          Scale:
+          <button
+            className={trueScale ? 'on' : ''}
+            onClick={() => setTrueScale(true)}
+            title="True proportions — big versions tower over small ones"
+          >
+            actual
+          </button>
+          ·
+          <button
+            className={!trueScale ? 'on' : ''}
+            onClick={() => setTrueScale(false)}
+            title="Compressed scale keeps smaller versions visible"
+          >
+            compressed
+          </button>
+        </div>
+      )}
     </div>
   );
+}
+
+const TICK_STEPS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+
+/** Round to the closest "nice" number (1/1.5/2/2.5/3/4/5/6/8 × 10^n). */
+function niceTick(v: number): number {
+  if (v <= 0) return 0;
+  const mag = 10 ** Math.floor(Math.log10(v));
+  const r = v / mag;
+  let best = TICK_STEPS[0];
+  for (const s of TICK_STEPS) if (Math.abs(s - r) < Math.abs(best - r)) best = s;
+  return best * mag;
+}
+
+/** Round up to the next "nice" number, so the axis never clips a bar. */
+function niceCeil(v: number): number {
+  if (v <= 0) return 0;
+  const mag = 10 ** Math.floor(Math.log10(v));
+  for (const s of TICK_STEPS) if (s * mag >= v) return s * mag;
+  return 10 * mag;
 }
 
 /** Deterministic pseudo-random in [0, 1) — stable across re-renders so the
@@ -223,10 +275,11 @@ function GrassBar({ x, y, width, height, index }: {
     for (let cx = 0; cx + 3 < width; cx += 6) {
       const r = rnd(i, cx, cy);
       if (r < darkChance || (r >= 0.5 && r < 0.5 + lightChance - darkChance)) {
+        const s = 2 + Math.floor(rnd(i, cx + 2, cy) * (cobble ? 4 : 3));
         speckles.push({
-          px: x + cx + Math.floor(rnd(i, cx + 1, cy) * 3),
-          py: y + cy + Math.floor(rnd(i, cx, cy + 1) * 3),
-          s: 2 + Math.floor(rnd(i, cx + 2, cy) * (cobble ? 4 : 3)),
+          px: Math.min(x + cx + Math.floor(rnd(i, cx + 1, cy) * 3), x + width - s),
+          py: Math.min(y + cy + Math.floor(rnd(i, cx, cy + 1) * 3), y + height - s),
+          s,
           f: r < darkChance ? 'rgba(0, 0, 0, 0.18)' : `rgba(255, 255, 255, ${cobble ? 0.09 : 0.07})`,
         });
       }
@@ -273,12 +326,93 @@ function GrassBar({ x, y, width, height, index }: {
   );
 }
 
-function Tip({ active, payload, label, isScore, metric }: {
+/** CurseForge segment in blocks mode: a plain dirt column with speckles. */
+function DirtBar({ x, y, width, height, index }: {
+  x?: number; y?: number; width?: number; height?: number; index?: number;
+}) {
+  if (x == null || y == null || !width || !height || height <= 0) return null;
+  const i = (index ?? 0) + 101;
+  const speckles: { px: number; py: number; s: number; f: string }[] = [];
+  for (let cy = 0; cy + 3 < height; cy += 6) {
+    for (let cx = 0; cx + 3 < width; cx += 6) {
+      const r = rnd(i, cx, cy);
+      if (r < 0.1 || (r >= 0.5 && r < 0.57)) {
+        const s = 2 + Math.floor(rnd(i, cx + 2, cy) * 3);
+        speckles.push({
+          px: Math.min(x + cx + Math.floor(rnd(i, cx + 1, cy) * 3), x + width - s),
+          py: Math.min(y + cy + Math.floor(rnd(i, cx, cy + 1) * 3), y + height - s),
+          s,
+          f: r < 0.1 ? 'rgba(0, 0, 0, 0.16)' : 'rgba(255, 255, 255, 0.07)',
+        });
+      }
+    }
+  }
+  return (
+    <g shapeRendering="crispEdges">
+      <rect x={x} y={y} width={width} height={height} fill="var(--dirt)" />
+      {speckles.map((p, k) => (
+        <rect key={k} x={p.px} y={p.py} width={p.s} height={p.s} fill={p.f} />
+      ))}
+    </g>
+  );
+}
+
+/** Modrinth segment in blocks mode: a grass layer sitting on the dirt, with
+ *  speckles and jittered teeth hanging into the segment below. */
+function GrassSegBar({ x, y, width, height, index, payload, sqrtScale }: {
+  x?: number; y?: number; width?: number; height?: number; index?: number;
+  payload?: Row;
+  sqrtScale?: boolean;
+}) {
+  if (x == null || y == null || !width || !height || height <= 0) return null;
+  const i = (index ?? 0) + 707;
+  // teeth may only hang into the dirt segment below — never past the
+  // baseline. On the sqrt scale, segment boundaries sit at sqrt positions,
+  // so the dirt height relates to this segment's height accordingly.
+  const sTotal = payload ? (sqrtScale ? Math.sqrt(payload.cf + payload.mr) : payload.cf + payload.mr) : 0;
+  const sCf = payload ? (sqrtScale ? Math.sqrt(payload.cf) : payload.cf) : 0;
+  const dirtPx = sTotal > sCf ? (height * sCf) / (sTotal - sCf) : 0;
+  const speckles: { px: number; py: number; s: number; f: string }[] = [];
+  for (let cy = 0; cy + 2 < height; cy += 5) {
+    for (let cx = 0; cx + 2 < width; cx += 5) {
+      const r = rnd(i, cx, cy);
+      if (r < 0.09 || (r >= 0.5 && r < 0.62)) {
+        speckles.push({
+          px: Math.min(x + cx + Math.floor(rnd(i, cx + 1, cy) * 3), x + width - 2),
+          py: Math.min(y + cy + Math.floor(rnd(i, cx, cy + 1) * 3), y + height - 2),
+          s: 2,
+          f: r < 0.09 ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.11)',
+        });
+      }
+    }
+  }
+  const teeth = width >= 16 && dirtPx >= 3
+    ? [0.1, 0.45, 0.78].map((base, k) => ({
+        tx: x + width * (base + rnd(i, k, 7331) * 0.1),
+        tw: Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)),
+        th: Math.min(3 + Math.floor(rnd(i, k, 1717) * 3), Math.floor(dirtPx)),
+      }))
+    : [];
+  return (
+    <g shapeRendering="crispEdges">
+      <rect x={x} y={y} width={width} height={height} fill="var(--grass)" />
+      {speckles.map((p, k) => (
+        <rect key={k} x={p.px} y={p.py} width={p.s} height={p.s} fill={p.f} />
+      ))}
+      {teeth.map((t, k) => (
+        <rect key={k} x={t.tx} y={y + height} width={t.tw} height={t.th} fill="var(--grass)" />
+      ))}
+    </g>
+  );
+}
+
+function Tip({ active, payload, label, isScore, metric, blocks }: {
   active?: boolean;
   payload?: { payload: Row }[];
   label?: string;
   isScore: boolean;
   metric: Tab;
+  blocks?: boolean;
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload;
@@ -298,8 +432,8 @@ function Tip({ active, payload, label, isScore, metric }: {
   return (
     <div className="chart-tip">
       <div className="t">{label}</div>
-      <div className="row"><i style={{ background: 'var(--cf)' }} />CurseForge<b>{fmt(row.cf)}{suffix}</b></div>
-      <div className="row"><i style={{ background: 'var(--mr)' }} />Modrinth<b>{fmt(row.mr)}</b></div>
+      <div className="row"><i style={{ background: blocks ? 'var(--dirt)' : 'var(--cf)' }} />CurseForge<b>{fmt(row.cf)}{suffix}</b></div>
+      <div className="row"><i style={{ background: blocks ? 'var(--grass)' : 'var(--mr)' }} />Modrinth<b>{fmt(row.mr)}</b></div>
       <div className="row" style={{ marginTop: 2 }}>Total {metric}<b>{fmt(row.total)}</b></div>
     </div>
   );
