@@ -34,6 +34,22 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Keep the local CurseForge mirror fresh (exact counts); falls back to a
+      # full reseed automatically if the cache was evicted.
+      - uses: actions/cache@v4
+        if: github.event_name != 'push'
+        with:
+          path: data/mirror
+          key: cf-mirror-${{ github.run_id }}
+          restore-keys: |
+            cf-mirror-
+
+      - name: Update CurseForge mirror
+        if: github.event_name != 'push'
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: pnpm mirror-cf
+
       # Scheduled/manual runs refresh the data; the script only writes files
       # when a metric moved >= 1%, so a clean tree means nothing to publish.
       - name: Refresh data

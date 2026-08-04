@@ -34,7 +34,8 @@ export default function PlatformShare({ families, totals }: {
             <span className="info-tip" tabIndex={0} role="note" aria-label="More about this chart's data">
               <span aria-hidden="true">i</span>
               <span className="tip-body">
-                A few CurseForge counts are estimates, marked with ~.
+                Compares each version's mods, modpacks, and downloads across the
+                two platforms. Counts marked ~ (rare) are estimates.
               </span>
             </span>
           </h2>

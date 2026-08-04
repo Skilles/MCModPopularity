@@ -327,8 +327,12 @@ async function main() {
   const [mrTotalMods, mrTotalPacks, cfTotalMods, cfTotalPacks] = await Promise.all([
     mrCount([typeFacet("mod")]),
     mrCount([typeFacet("modpack")]),
-    cfCountUncapped({}, CLASS_MODS),
-    cfCountUncapped({}, CLASS_MODPACKS),
+    cfExact?.totals
+      ? Promise.resolve({ count: cfExact.totals.mods, approx: !!cfExact.totals.modsApprox })
+      : cfCountUncapped({}, CLASS_MODS),
+    cfExact?.totals
+      ? Promise.resolve({ count: cfExact.totals.modpacks, approx: !!cfExact.totals.modpacksApprox })
+      : cfCountUncapped({}, CLASS_MODPACKS),
   ]);
 
   console.log("Fetching per-family and per-version counts...");
@@ -349,21 +353,26 @@ async function main() {
         Promise.all(LOADERS.map((l) =>
           mrCount([typeFacet("mod"), versionsFacet(vs), [`categories:${l}`]]))),
         exact?.mods != null
-          ? Promise.resolve({ count: exact.mods, approx: false })
+          ? Promise.resolve({ count: exact.mods, approx: !!exact.modsApprox })
           : cfCountUncapped(cfFamilyParams, CLASS_MODS, key),
         exact?.modpacks != null
-          ? Promise.resolve({ count: exact.modpacks, approx: false })
+          ? Promise.resolve({ count: exact.modpacks, approx: !!exact.modpacksApprox })
           : cfCountUncapped(cfFamilyParams, CLASS_MODPACKS, key),
         Promise.all(LOADERS.map(async (l) =>
           (await cfCountUncapped({ ...cfFamilyParams, modLoaderType: CF_LOADERS[l] }, CLASS_MODS, key)).count)),
       ]);
 
     const versions = await Promise.all(members.map(async (m) => {
+      const exactV = exact?.versions?.[m.version];
       const [mrM, mrP, cfM, cfP] = await Promise.all([
         mrCount([typeFacet("mod"), versionsFacet([m.version])]),
         mrCount([typeFacet("modpack"), versionsFacet([m.version])]),
-        cfCountUncapped({ gameVersion: m.version }, CLASS_MODS, key),
-        cfCountUncapped({ gameVersion: m.version }, CLASS_MODPACKS, key),
+        exactV
+          ? Promise.resolve({ count: exactV.mods, approx: !!exactV.modsApprox })
+          : cfCountUncapped({ gameVersion: m.version }, CLASS_MODS, key),
+        exactV
+          ? Promise.resolve({ count: exactV.modpacks, approx: !!exactV.modpacksApprox })
+          : cfCountUncapped({ gameVersion: m.version }, CLASS_MODPACKS, key),
       ]);
       return {
         v: m.version,
@@ -424,7 +433,7 @@ async function main() {
     totals: {
       cf: {
         mods: cfTotalMods.count,
-        ...(cfTotalMods.approx ? { modsApprox: true } : {}),
+        ...(cfTotalMods.approx || cfTotalPacks.approx ? { modsApprox: true } : {}),
         modpacks: cfTotalPacks.count,
         downloads: cfDl.total,
       },

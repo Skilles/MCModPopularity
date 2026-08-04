@@ -15,20 +15,24 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
 - `scripts/fetch-data.ts` (`pnpm fetch-data`) — pulls both APIs, writes
   `data/latest.json` (full dataset) and `data/snapshots/DATE.json` (slim, for
   trends). Only writes when a metric moved >= 1% vs the committed data
-  (`--force` overrides). CurseForge search caps results at 10,000. Capped
-  family counts come exact from `data/cf-exact.json` when < 8 days old —
-  `scripts/enumerate-cf.ts` (`pnpm enumerate-cf`, weekly Sunday workflow)
-  pages every category partition of each capped family and counts the
-  deduplicated project ids (~15-20k requests). Without fresh exact data
-  (and always for capped patch-level counts), counts are estimated from
-  category-partition sums divided by the categories-per-project factor
-  measured from that run's swept projects — flagged `modsApprox`. Downloads
-  come from global top-N sweeps plus per-family filtered sweeps,
-  deduplicated by project id. Activity is file-accurate: the top ~150
-  Modrinth mods per family have their full version history fetched, and a
-  mod is "active" for a version only if it published a file for that version
-  in the last 90 days (CurseForge has no date filter). Shared script
-  plumbing lives in `scripts/shared.ts`.
+  (`--force` overrides). CurseForge search caps results at 10,000; all CF
+  counts (global, family, patch) come exact from `data/cf-exact.json`, which
+  `scripts/mirror-cf.ts` (`pnpm mirror-cf`) derives from a full local mirror
+  of the Minecraft catalog (gzipped in gitignored `data/mirror/`, cached
+  between CI runs via actions/cache). The mirror seeds via ladder-partitioned
+  enumeration (category -> version type -> loader -> patch -> two-direction
+  date windows, ~20k requests, weekly Sunday workflow + automatic when the
+  cache is missing) and updates daily by paging the LastUpdated sort; each
+  run self-validates against slices the API counts exactly. If cf-exact.json
+  is stale (> 3 days), fetch-data falls back to category-sum estimates
+  calibrated by the categories-per-project factor measured from that run's
+  swept projects — flagged `modsApprox`. Downloads come from global top-N
+  sweeps plus per-family filtered sweeps, deduplicated by project id.
+  Activity is file-accurate: the top ~150 Modrinth mods per family have
+  their full version history fetched, and a mod is "active" for a version
+  only if it published a file for that version in the last 90 days
+  (CurseForge has no date filter). Shared script plumbing lives in
+  `scripts/shared.ts`.
 - Popularity score (`src/lib/data.ts`): 0-100 blend of downloads 40%
   (sqrt-scaled) + mod count 32% + modpack count 8% + activity 15% +
   recency 5% (user-approved weights; recency bias reduced three times).

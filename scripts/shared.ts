@@ -135,12 +135,24 @@ export async function fetchCfCategoryIds(cf: Client, classId: number) {
   return cats.data.map((c) => c.id);
 }
 
+export interface CfExactCounts {
+  mods: number;
+  modpacks: number;
+  /** Set when a partition of this slice exceeded what the API can page —
+   *  the count is a near-exact lower bound rather than exact. */
+  modsApprox?: boolean;
+  modpacksApprox?: boolean;
+}
 export interface CfExact {
   updatedAt: string;
-  families: Record<string, { mods?: number; modpacks?: number }>;
+  source?: string;
+  totals?: CfExactCounts;
+  families: Record<string, Partial<CfExactCounts> & {
+    versions?: Record<string, CfExactCounts>;
+  }>;
 }
 
-export function readCfExact(maxAgeDays = 8): CfExact | null {
+export function readCfExact(maxAgeDays = 3): CfExact | null {
   if (!existsSync(CF_EXACT_PATH)) return null;
   const exact = JSON.parse(readFileSync(CF_EXACT_PATH, "utf8")) as CfExact;
   const age = Date.now() - Date.parse(exact.updatedAt);

@@ -1,28 +1,565 @@
 {
- "updatedAt": "2026-08-03T21:59:24.187Z",
+ "updatedAt": "2026-08-04T02:23:54.586Z",
+ "source": "mirror",
+ "totals": {
+  "mods": 110775,
+  "modpacks": 126187,
+  "modpacksApprox": true
+ },
  "families": {
+  "26.2": {
+   "mods": 5659,
+   "modpacks": 348,
+   "versions": {
+    "26.2": {
+     "mods": 5659,
+     "modpacks": 348
+    }
+   }
+  },
+  "26.1": {
+   "mods": 8906,
+   "modpacks": 668,
+   "versions": {
+    "26.1.2": {
+     "mods": 8291,
+     "modpacks": 590
+    },
+    "26.1.1": {
+     "mods": 5649,
+     "modpacks": 123
+    },
+    "26.1": {
+     "mods": 5903,
+     "modpacks": 154
+    }
+   }
+  },
   "1.21": {
-   "mods": 36149,
-   "modpacks": 16502
+   "mods": 36153,
+   "modpacks": 16499,
+   "versions": {
+    "1.21.11": {
+     "mods": 8640,
+     "modpacks": 1238
+    },
+    "1.21.10": {
+     "mods": 6633,
+     "modpacks": 715
+    },
+    "1.21.9": {
+     "mods": 5379,
+     "modpacks": 156
+    },
+    "1.21.8": {
+     "mods": 9964,
+     "modpacks": 639
+    },
+    "1.21.7": {
+     "mods": 5845,
+     "modpacks": 198
+    },
+    "1.21.6": {
+     "mods": 5829,
+     "modpacks": 196
+    },
+    "1.21.5": {
+     "mods": 7274,
+     "modpacks": 488
+    },
+    "1.21.4": {
+     "mods": 10349,
+     "modpacks": 762
+    },
+    "1.21.3": {
+     "mods": 5959,
+     "modpacks": 187
+    },
+    "1.21.2": {
+     "mods": 4945,
+     "modpacks": 78
+    },
+    "1.21.1": {
+     "mods": 27807,
+     "modpacks": 12894
+    },
+    "1.21": {
+     "mods": 9608,
+     "modpacks": 1407
+    }
+   }
   },
   "1.20": {
-   "mods": 48069
+   "mods": 48068,
+   "modpacks": 41246,
+   "versions": {
+    "1.20.6": {
+     "mods": 6420,
+     "modpacks": 232
+    },
+    "1.20.5": {
+     "mods": 3960,
+     "modpacks": 86
+    },
+    "1.20.4": {
+     "mods": 8972,
+     "modpacks": 769
+    },
+    "1.20.3": {
+     "mods": 4956,
+     "modpacks": 88
+    },
+    "1.20.2": {
+     "mods": 7089,
+     "modpacks": 472
+    },
+    "1.20.1": {
+     "mods": 46614,
+     "modpacks": 40282,
+     "modpacksApprox": true
+    },
+    "1.20": {
+     "mods": 7826,
+     "modpacks": 499
+    }
+   },
+   "modpacksApprox": true
   },
   "1.19": {
-   "mods": 21499,
-   "modpacks": 14752
+   "mods": 21500,
+   "modpacks": 14751,
+   "versions": {
+    "1.19.4": {
+     "mods": 9705,
+     "modpacks": 817
+    },
+    "1.19.3": {
+     "mods": 6539,
+     "modpacks": 669
+    },
+    "1.19.2": {
+     "mods": 18530,
+     "modpacks": 13179
+    },
+    "1.19.1": {
+     "mods": 6137,
+     "modpacks": 311
+    },
+    "1.19": {
+     "mods": 7095,
+     "modpacks": 1000
+    }
+   }
   },
   "1.18": {
-   "mods": 16749,
-   "modpacks": 11313
+   "mods": 16751,
+   "modpacks": 11311,
+   "versions": {
+    "1.18.2": {
+     "mods": 15816,
+     "modpacks": 9554
+    },
+    "1.18.1": {
+     "mods": 6715,
+     "modpacks": 2203
+    },
+    "1.18": {
+     "mods": 5158,
+     "modpacks": 480
+    }
+   }
+  },
+  "1.17": {
+   "mods": 7778,
+   "modpacks": 1026,
+   "versions": {
+    "1.17.1": {
+     "mods": 7442,
+     "modpacks": 914
+    },
+    "1.17": {
+     "mods": 3327,
+     "modpacks": 215
+    }
+   }
   },
   "1.16": {
    "mods": 18712,
-   "modpacks": 16875
+   "modpacks": 16875,
+   "versions": {
+    "1.16.5": {
+     "mods": 17273,
+     "modpacks": 15473
+    },
+    "1.16.4": {
+     "mods": 6721,
+     "modpacks": 1712
+    },
+    "1.16.3": {
+     "mods": 5089,
+     "modpacks": 580
+    },
+    "1.16.2": {
+     "mods": 4058,
+     "modpacks": 281
+    },
+    "1.16.1": {
+     "mods": 4108,
+     "modpacks": 458
+    },
+    "1.16": {
+     "mods": 2546,
+     "modpacks": 273
+    }
+   }
+  },
+  "1.15": {
+   "mods": 6592,
+   "modpacks": 1322,
+   "versions": {
+    "1.15.2": {
+     "mods": 6443,
+     "modpacks": 1306
+    },
+    "1.15.1": {
+     "mods": 1748,
+     "modpacks": 75
+    },
+    "1.15": {
+     "mods": 1333,
+     "modpacks": 47
+    }
+   }
+  },
+  "1.14": {
+   "mods": 4473,
+   "modpacks": 632,
+   "versions": {
+    "1.14.4": {
+     "mods": 4325,
+     "modpacks": 611
+    },
+    "1.14.3": {
+     "mods": 1127,
+     "modpacks": 47
+    },
+    "1.14.2": {
+     "mods": 1069,
+     "modpacks": 35
+    },
+    "1.14.1": {
+     "mods": 822,
+     "modpacks": 29
+    },
+    "1.14": {
+     "mods": 886,
+     "modpacks": 35
+    }
+   }
+  },
+  "1.13": {
+   "mods": 846,
+   "modpacks": 61,
+   "versions": {
+    "1.13.2": {
+     "mods": 814,
+     "modpacks": 58
+    },
+    "1.13.1": {
+     "mods": 213,
+     "modpacks": 18
+    },
+    "1.13": {
+     "mods": 270,
+     "modpacks": 17
+    }
+   }
   },
   "1.12": {
    "mods": 13751,
-   "modpacks": 24477
+   "modpacks": 24476,
+   "versions": {
+    "1.12.2": {
+     "mods": 13538,
+     "modpacks": 24265
+    },
+    "1.12.1": {
+     "mods": 2417,
+     "modpacks": 502
+    },
+    "1.12": {
+     "mods": 2718,
+     "modpacks": 606
+    }
+   }
+  },
+  "1.11": {
+   "mods": 2469,
+   "modpacks": 622,
+   "versions": {
+    "1.11.2": {
+     "mods": 2356,
+     "modpacks": 595
+    },
+    "1.11.1": {
+     "mods": 428,
+     "modpacks": 32
+    },
+    "1.11": {
+     "mods": 1100,
+     "modpacks": 65
+    }
+   }
+  },
+  "1.10": {
+   "mods": 3004,
+   "modpacks": 2449,
+   "versions": {
+    "1.10.2": {
+     "mods": 2966,
+     "modpacks": 2424
+    },
+    "1.10.1": {
+     "mods": 480,
+     "modpacks": 60
+    },
+    "1.10": {
+     "mods": 1053,
+     "modpacks": 117
+    }
+   }
+  },
+  "1.9": {
+   "mods": 1606,
+   "modpacks": 223,
+   "versions": {
+    "1.9.4": {
+     "mods": 1412,
+     "modpacks": 125
+    },
+    "1.9.3": {
+     "mods": 162,
+     "modpacks": 16
+    },
+    "1.9.2": {
+     "mods": 185,
+     "modpacks": 61
+    },
+    "1.9.1": {
+     "mods": 168,
+     "modpacks": 21
+    },
+    "1.9": {
+     "mods": 969,
+     "modpacks": 92
+    }
+   }
+  },
+  "1.8": {
+   "mods": 2380,
+   "modpacks": 367,
+   "versions": {
+    "1.8.9": {
+     "mods": 1825,
+     "modpacks": 295
+    },
+    "1.8.8": {
+     "mods": 537,
+     "modpacks": 20
+    },
+    "1.8.7": {
+     "mods": 216,
+     "modpacks": 16
+    },
+    "1.8.6": {
+     "mods": 204,
+     "modpacks": 15
+    },
+    "1.8.5": {
+     "mods": 205,
+     "modpacks": 15
+    },
+    "1.8.4": {
+     "mods": 203,
+     "modpacks": 15
+    },
+    "1.8.3": {
+     "mods": 212,
+     "modpacks": 15
+    },
+    "1.8.2": {
+     "mods": 217,
+     "modpacks": 28
+    },
+    "1.8.1": {
+     "mods": 230,
+     "modpacks": 18
+    },
+    "1.8": {
+     "mods": 1198,
+     "modpacks": 80
+    }
+   }
+  },
+  "1.7": {
+   "mods": 5080,
+   "modpacks": 5248,
+   "versions": {
+    "1.7.10": {
+     "mods": 4935,
+     "modpacks": 5238
+    },
+    "1.7.9": {
+     "mods": 155,
+     "modpacks": 26
+    },
+    "1.7.8": {
+     "mods": 147,
+     "modpacks": 23
+    },
+    "1.7.7": {
+     "mods": 142,
+     "modpacks": 21
+    },
+    "1.7.6": {
+     "mods": 140,
+     "modpacks": 21
+    },
+    "1.7.5": {
+     "mods": 144,
+     "modpacks": 23
+    },
+    "1.7.4": {
+     "mods": 161,
+     "modpacks": 20
+    },
+    "1.7.3": {
+     "mods": 50,
+     "modpacks": 10
+    },
+    "1.7.2": {
+     "mods": 788,
+     "modpacks": 26
+    }
+   }
+  },
+  "1.6": {
+   "mods": 928,
+   "modpacks": 54,
+   "versions": {
+    "1.6.4": {
+     "mods": 810,
+     "modpacks": 51
+    },
+    "1.6.2": {
+     "mods": 402,
+     "modpacks": 12
+    },
+    "1.6.1": {
+     "mods": 105,
+     "modpacks": 10
+    }
+   }
+  },
+  "1.5": {
+   "mods": 388,
+   "modpacks": 20,
+   "versions": {
+    "1.5.2": {
+     "mods": 380,
+     "modpacks": 19
+    },
+    "1.5.1": {
+     "mods": 126,
+     "modpacks": 7
+    }
+   }
+  },
+  "1.4": {
+   "mods": 188,
+   "modpacks": 24,
+   "versions": {
+    "1.4.7": {
+     "mods": 154,
+     "modpacks": 19
+    },
+    "1.4.6": {
+     "mods": 94,
+     "modpacks": 8
+    },
+    "1.4.5": {
+     "mods": 55,
+     "modpacks": 6
+    },
+    "1.4.4": {
+     "mods": 49,
+     "modpacks": 6
+    },
+    "1.4.2": {
+     "mods": 69,
+     "modpacks": 9
+    }
+   }
+  },
+  "1.3": {
+   "mods": 88,
+   "modpacks": 12,
+   "versions": {
+    "1.3.2": {
+     "mods": 76,
+     "modpacks": 10
+    },
+    "1.3.1": {
+     "mods": 52,
+     "modpacks": 8
+    }
+   }
+  },
+  "1.2": {
+   "mods": 99,
+   "modpacks": 68,
+   "versions": {
+    "1.2.5": {
+     "mods": 88,
+     "modpacks": 14
+    },
+    "1.2.4": {
+     "mods": 33,
+     "modpacks": 6
+    },
+    "1.2.3": {
+     "mods": 38,
+     "modpacks": 9
+    },
+    "1.2.2": {
+     "mods": 30,
+     "modpacks": 54
+    },
+    "1.2.1": {
+     "mods": 27,
+     "modpacks": 11
+    }
+   }
+  },
+  "1.1": {
+   "mods": 54,
+   "modpacks": 17,
+   "versions": {
+    "1.1": {
+     "mods": 54,
+     "modpacks": 17
+    }
+   }
+  },
+  "1.0": {
+   "mods": 44,
+   "modpacks": 19,
+   "versions": {
+    "1.0": {
+     "mods": 44,
+     "modpacks": 19
+    }
+   }
   }
  }
 }

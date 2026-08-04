@@ -17,8 +17,9 @@ pnpm dev
 ## Data notes
 
 - Counts come from the platforms' search APIs. CurseForge caps search results
-  at 10,000, so larger counts are estimated from per-category partition sums
-  divided by a calibration factor measured on exact slices; marked ~.
+  at 10,000, so counts are computed exactly from a locally maintained mirror
+  of the full Minecraft catalog; if the mirror data is stale they fall back
+  to calibrated estimates, marked ~.
 - Download totals sum every project reached by the sweeps: global top 10k mods
   / 5k modpacks per platform plus per-version filtered sweeps, deduplicated.
 - The popularity index blends downloads (30%), mod count (25%), maintenance
