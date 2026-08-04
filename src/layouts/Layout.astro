@@ -48,6 +48,18 @@ const ogImage = new URL(`${basePath}/og.png`, Astro.site);
       document.documentElement.dataset.blocks = localStorage.getItem('blocks') ?? 'off';
     </script>
   </head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6K4B2SRJFX" />
+<script>
+  // @ts-ignore
+  window.dataLayer = window.dataLayer || [];
+  // @ts-ignore
+  function gtag(){dataLayer.push(arguments);}
+  // @ts-ignore
+  gtag('js', new Date());
+  // @ts-ignore
+  gtag('config', 'G-6K4B2SRJFX');
+</script>
   <body>
     <div class="wrap">
       <header class="site-header">
