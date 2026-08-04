@@ -121,11 +121,10 @@ export function popularityScores(rows: ScoreInput[], generatedAt: string): Score
     const ageYears = Math.max(0, (now - new Date(r.date).getTime()) / (365.25 * 86_400_000));
     const recency = Math.exp(-ageYears / 2.5);
     const blend =
-      0.35 * (rootD[i] / maxD) +
-      0.28 * (logC[i] / maxC) +
-      0.15 * (logP[i] / maxP) +
-      0.15 * Math.min(activeShare, 1) +
-      0.07 * recency;
+      0.34 * (rootD[i] / maxD) +
+      0.30 * (logC[i] / maxC) +
+      0.16 * (logP[i] / maxP) +
+      0.2 * Math.min(activeShare, 1)
     return {
       name: r.name,
       blend,
