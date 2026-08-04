@@ -4,22 +4,29 @@ import {
 } from 'recharts';
 import type { Snapshot } from '../lib/data';
 
-const SLOT_COLORS = ['var(--mr)', 'var(--forge)', 'var(--fabric)', 'var(--quilt)', 'var(--cf)'];
-const MAX_SERIES = 4;
+const COLORS = [
+  'var(--mr)', 'var(--forge)', 'var(--fabric)', 'var(--quilt)',
+  'var(--cf)', 'var(--gold)', 'var(--grass-deep)', 'var(--stone)',
+];
+const DEFAULT_VISIBLE = new Set(['1.7', '1.12', '1.20', '1.21', '26.2']);
+
+/** "1.20" -> [1, 20]; works for the date-based scheme too ("26.2" -> [26, 2]). */
+const parts = (k: string) => k.split('.').map(Number);
+const byAge = (a: string, b: string) => {
+  const [am, an] = parts(a);
+  const [bm, bn] = parts(b);
+  return am - bm || an - bn;
+};
 
 /** Share of combined downloads per family across daily snapshots. */
 export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
-  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [hiddenState, setHiddenState] = useState<Set<string> | null>(null);
   const { rows, keys } = useMemo(() => {
     const sorted = [...snapshots].sort((a, b) => a.date.localeCompare(b.date));
     const latest = sorted.at(-1);
-    if (!latest) return { rows: [], keys: [] };
+    if (!latest) return { rows: [], keys: [] as string[] };
 
-    const keys = Object.entries(latest.families)
-      .sort(([, a], [, b]) => (b.cf.dl + b.mr.dl) - (a.cf.dl + a.mr.dl))
-      .slice(0, MAX_SERIES)
-      .map(([k]) => k);
-
+    const keys = Object.keys(latest.families).sort(byAge);
     const rows = sorted.map((s) => {
       const all = Object.values(s.families).reduce((a, f) => a + f.cf.dl + f.mr.dl, 0);
       const row: Record<string, number | string> = { date: s.date.slice(5) };
@@ -40,19 +47,21 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
     );
   }
 
+  const hidden = hiddenState ?? new Set(keys.filter((k) => !DEFAULT_VISIBLE.has(k)));
   const toggle = (k: string) =>
-    setHidden((prev) => {
-      const next = new Set(prev);
+    setHiddenState(() => {
+      const next = new Set(hidden);
       if (next.has(k)) next.delete(k);
       else if (next.size < keys.length - 1) next.add(k); // keep at least one visible
       return next;
     });
+  const colorOf = (k: string) => COLORS[keys.indexOf(k) % COLORS.length];
   const visible = keys.filter((k) => !hidden.has(k));
 
   return (
     <div>
       <div className="legend" style={{ marginBottom: 6 }}>
-        {keys.map((k, i) => (
+        {keys.map((k) => (
           <button
             key={k}
             type="button"
@@ -61,7 +70,7 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
             aria-pressed={!hidden.has(k)}
             title={hidden.has(k) ? `Show ${k}` : `Hide ${k}`}
           >
-            <i style={{ background: SLOT_COLORS[i] }} />
+            <i style={{ background: colorOf(k) }} />
             <span>{k}</span>
           </button>
         ))}
@@ -92,7 +101,7 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
                   <div className="t">{label}</div>
                   {payload.map((p) => (
                     <div className="row" key={String(p.dataKey)}>
-                      <i style={{ background: SLOT_COLORS[keys.indexOf(String(p.dataKey))] }} />
+                      <i style={{ background: colorOf(String(p.dataKey)) }} />
                       {String(p.dataKey)}<b>{p.value}%</b>
                     </div>
                   ))}
@@ -105,7 +114,7 @@ export default function TrendChart({ snapshots }: { snapshots: Snapshot[] }) {
               key={k}
               type="monotone"
               dataKey={k}
-              stroke={SLOT_COLORS[keys.indexOf(k)]}
+              stroke={colorOf(k)}
               strokeWidth={2}
               dot={false}
               isAnimationActive={false}

@@ -80,7 +80,7 @@ export default function LoaderChart({ families }: { families: FamilyEntry[] }) {
         </div>
       </div>
       <div className="note" style={{ marginTop: 14 }}>
-        Click a loader in the legend to hide it. A mod can count toward several loaders.
+        A mod can count toward several loaders.
       </div>
     </div>
   );

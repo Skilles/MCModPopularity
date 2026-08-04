@@ -302,11 +302,14 @@ function GrassBar({ x, y, width, height, index }: {
   // grass/moss "teeth" hanging below the cap, with jittered positions
   const showTeeth = height > cap + 6 && width >= 16;
   const teeth = showTeeth
-    ? [0.1, 0.45, 0.78].map((base, k) => ({
-        tx: x + width * (base + rnd(i, k, 7331) * 0.1),
-        tw: Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)),
-        th: 3 + Math.floor(rnd(i, k, 1717) * 3),
-      }))
+    ? [0.1, 0.45, 0.78].map((base, k) => {
+        const tx = x + width * (base + rnd(i, k, 7331) * 0.1);
+        return {
+          tx,
+          tw: Math.min(Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)), x + width - tx),
+          th: 3 + Math.floor(rnd(i, k, 1717) * 3),
+        };
+      })
     : [];
 
   return (
@@ -387,11 +390,14 @@ function GrassSegBar({ x, y, width, height, index, payload, sqrtScale }: {
     }
   }
   const teeth = width >= 16 && dirtPx >= 3
-    ? [0.1, 0.45, 0.78].map((base, k) => ({
-        tx: x + width * (base + rnd(i, k, 7331) * 0.1),
-        tw: Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)),
-        th: Math.min(3 + Math.floor(rnd(i, k, 1717) * 3), Math.floor(dirtPx)),
-      }))
+    ? [0.1, 0.45, 0.78].map((base, k) => {
+        const tx = x + width * (base + rnd(i, k, 7331) * 0.1);
+        return {
+          tx,
+          tw: Math.min(Math.max(2, width * (0.08 + rnd(i, k, 4242) * 0.08)), x + width - tx),
+          th: Math.min(3 + Math.floor(rnd(i, k, 1717) * 3), Math.floor(dirtPx)),
+        };
+      })
     : [];
   return (
     <g shapeRendering="crispEdges">

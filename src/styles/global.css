@@ -155,6 +155,20 @@ body {
 .theme-toggle svg { width: 19px; height: 19px; }
 :root[data-theme='dark'] .theme-toggle .moon { display: none; }
 :root:not([data-theme='dark']) .theme-toggle .sun { display: none; }
+.blocks-toggle svg {
+  width: 17px;
+  height: 17px;
+  opacity: 0.45;
+  filter: saturate(0.4);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+:root[data-blocks='on'] .blocks-toggle svg {
+  opacity: 1;
+  filter: none;
+}
+:root[data-blocks='on'] .blocks-toggle {
+  border-color: var(--grass);
+}
 
 /* ---------- tiles ---------- */
 .tiles {
