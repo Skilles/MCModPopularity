@@ -26,8 +26,14 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
   run self-validates against slices the API counts exactly. If cf-exact.json
   is stale (> 3 days), fetch-data falls back to category-sum estimates
   calibrated by the categories-per-project factor measured from that run's
-  swept projects — flagged `modsApprox`. Downloads come from global top-N
-  sweeps plus per-family filtered sweeps, deduplicated by project id.
+  swept projects — flagged `modsApprox`. CF downloads also come from the
+  mirror (each project's download count is recorded as it is swept, so
+  attribution covers the full ~240k-project catalog; dormant projects'
+  counts refresh on the weekly reseed), with the same staleness fallback to
+  top-N search sweeps. Modrinth downloads come from sweeps paged to the
+  search API's 10k result window — global plus per-family, with a
+  per-loader partition pass for families over the window — deduplicated by
+  project id; that covers most of the (much smaller) Modrinth catalog.
   Activity is file-accurate: the top ~150 Modrinth mods per family have
   their full version history fetched, and a mod is "active" for a version
   only if it published a file for that version in the last 90 days

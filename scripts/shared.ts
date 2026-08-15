@@ -25,7 +25,40 @@ export const LOADERS = Object.keys(CF_LOADERS) as Loader[];
 /** "1.20.1" -> "1.20", "26.1.2" -> "26.1", "1.21" -> "1.21" */
 export const familyOf = (v: string) => v.split(".").slice(0, 2).join(".");
 
-export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export interface DlProject { downloads: number; versions: Iterable<string> }
+
+/**
+ * Raw attribution credits a project's full downloads to every version it
+ * supports ("downloads available for this version" — what the charts show).
+ * Weighted attribution splits the downloads evenly across the supported
+ * versions/families instead; the popularity score uses it so versions inside
+ * long support ranges don't collect full credit from every long-lived mod.
+ */
+export function attributeDownloads(projects: Iterable<DlProject>, releaseSet: Set<string>) {
+  const perVersion = new Map<string, number>();
+  const perFamily = new Map<string, number>();
+  const perVersionW = new Map<string, number>();
+  const perFamilyW = new Map<string, number>();
+  let total = 0;
+  let count = 0;
+  for (const p of projects) {
+    count++;
+    total += p.downloads;
+    const versions = [...p.versions].filter((v) => releaseSet.has(v));
+    const families = new Set(versions.map(familyOf));
+    for (const v of versions) {
+      perVersion.set(v, (perVersion.get(v) ?? 0) + p.downloads);
+      perVersionW.set(v, (perVersionW.get(v) ?? 0) + p.downloads / versions.length);
+    }
+    for (const f of families) {
+      perFamily.set(f, (perFamily.get(f) ?? 0) + p.downloads);
+      perFamilyW.set(f, (perFamilyW.get(f) ?? 0) + p.downloads / families.size);
+    }
+  }
+  return { perVersion, perFamily, perVersionW, perFamilyW, total, projects: count };
+}
+
+export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 export function loadDotEnv() {
   const path = resolve(ROOT, ".env");
@@ -85,6 +118,7 @@ export interface CfSearch { data: CfMod[]; pagination: { totalCount: number } }
 export interface CfMod {
   id: number;
   downloadCount: number;
+  dateModified?: string;
   latestFilesIndexes: { gameVersion: string }[];
   categories: { id: number }[];
 }
@@ -143,6 +177,8 @@ export interface CfExactCounts {
   modsApprox?: boolean;
   modpacksApprox?: boolean;
 }
+/** Raw (`dl`) and weighted (`dlW`) downloads attributed to a slice. */
+export interface CfExactDl { dl: number; dlW: number }
 export interface CfExact {
   updatedAt: string;
   source?: string;
@@ -150,6 +186,14 @@ export interface CfExact {
   families: Record<string, Partial<CfExactCounts> & {
     versions?: Record<string, CfExactCounts>;
   }>;
+  /** Download attribution over the full mirrored catalog (all projects,
+   *  not just the top-N a search sweep can reach). */
+  downloads?: {
+    projects: number;
+    total: number;
+    families: Record<string, CfExactDl>;
+    versions: Record<string, CfExactDl>;
+  };
 }
 
 export function readCfExact(maxAgeDays = 3): CfExact | null {

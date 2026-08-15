@@ -11,6 +11,8 @@
  * (weekly ID-level enumeration, exact) when fresh; otherwise they are
  * estimated from category-partition sums divided by the category-per-mod
  * factor measured on this run's swept projects, and flagged `modsApprox`.
+ * CurseForge downloads likewise come from cf-exact.json's full-catalog
+ * attribution when fresh, falling back to this run's top-N sweeps.
  *
  * Requires CURSEFORGE_API_KEY (read from env, falling back to .env).
  */
@@ -18,19 +20,25 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CF_CAP, CF_LOADERS, CLASS_MODS, CLASS_MODPACKS, LATEST_PATH, LOADERS, MODRINTH,
-  SNAPSHOT_DIR, cfSearchFactory, familyOf, fetchCfCategoryIds, fetchCfTypeIds,
-  fetchReleaseFamilies, makeCfClient, makeMrClient, readCfExact,
+  SNAPSHOT_DIR, attributeDownloads, cfSearchFactory, familyOf, fetchCfCategoryIds,
+  fetchCfTypeIds, fetchReleaseFamilies, makeCfClient, makeMrClient, readCfExact,
   type CfSearch, type Loader,
 } from "./shared";
 
 const FORCE = process.argv.includes("--force");
 const THRESHOLD = 0.01;
 
-/** Global sweep depth (top projects by downloads). */
+/** Modrinth sweeps page every query to the search index's 10k result window
+ *  (globally and per family); families over the window get an extra
+ *  per-loader partition pass. Projects are deduped by id before attribution,
+ *  so together this covers nearly the whole catalog. */
+const MR_WINDOW = 10_000;
+/** CurseForge sweep depths (top projects by downloads). These only feed the
+ *  category-factor measurement and the download fallback for when
+ *  cf-exact.json is stale — fresh runs take downloads from the mirror's
+ *  full-catalog attribution instead. */
 const SWEEP_MODS = 10_000;
 const SWEEP_MODPACKS = 5_000;
-/** Additional per-family filtered sweep depth, to reach projects that the
- *  global top-N misses. Projects are deduped by id before attribution. */
 const FAMILY_SWEEP_MODS = 2_000;
 const FAMILY_SWEEP_MODPACKS = 500;
 /** Window for the "actively maintained" metric. */
@@ -69,35 +77,6 @@ interface FamilyEntry {
 
 /** Swept projects deduped by id across the global and per-family sweeps. */
 interface SweptProject { downloads: number; versions: Set<string>; categories: number; classId?: number }
-
-/**
- * Raw attribution credits a project's full downloads to every version it
- * supports ("downloads available for this version" — what the charts show).
- * Weighted attribution splits the downloads evenly across the supported
- * versions/families instead; the popularity score uses it so versions inside
- * long support ranges don't collect full credit from every long-lived mod.
- */
-function attribute(projects: Map<string | number, SweptProject>, releaseSet: Set<string>) {
-  const perVersion = new Map<string, number>();
-  const perFamily = new Map<string, number>();
-  const perVersionW = new Map<string, number>();
-  const perFamilyW = new Map<string, number>();
-  let total = 0;
-  for (const p of projects.values()) {
-    total += p.downloads;
-    const versions = [...p.versions].filter((v) => releaseSet.has(v));
-    const families = new Set(versions.map(familyOf));
-    for (const v of versions) {
-      perVersion.set(v, (perVersion.get(v) ?? 0) + p.downloads);
-      perVersionW.set(v, (perVersionW.get(v) ?? 0) + p.downloads / versions.length);
-    }
-    for (const f of families) {
-      perFamily.set(f, (perFamily.get(f) ?? 0) + p.downloads);
-      perFamilyW.set(f, (perFamilyW.get(f) ?? 0) + p.downloads / families.size);
-    }
-  }
-  return { perVersion, perFamily, perVersionW, perFamilyW, total, projects: projects.size };
-}
 
 // ------------------------------------------------------------------ modrinth
 
@@ -277,14 +256,21 @@ async function main() {
   /** Per family: Modrinth mod ids ordered by downloads (activity sample frame). */
   const familyTopIds = new Map<string, string[]>();
   const mrSweeps = (async () => {
-    await mrSweepInto(mrProjects, [typeFacet("mod")], SWEEP_MODS);
-    await mrSweepInto(mrProjects, [typeFacet("modpack")], SWEEP_MODPACKS);
+    await mrSweepInto(mrProjects, [typeFacet("mod")], MR_WINDOW);
+    await mrSweepInto(mrProjects, [typeFacet("modpack")], MR_WINDOW);
     for (const [key, members] of families) {
       const vf = versionsFacet(members.map((m) => m.version));
       const ordered: string[] = [];
-      await mrSweepInto(mrProjects, [typeFacet("mod"), vf], FAMILY_SWEEP_MODS, ordered);
+      await mrSweepInto(mrProjects, [typeFacet("mod"), vf], MR_WINDOW, ordered);
       familyTopIds.set(key, ordered.slice(0, ACTIVITY_SAMPLE));
-      await mrSweepInto(mrProjects, [typeFacet("modpack"), vf], FAMILY_SWEEP_MODPACKS);
+      if (ordered.length >= MR_WINDOW) {
+        // family exceeds the search window — per-loader partitions reach most
+        // of the tail (only loader-untagged projects past 10k stay missed)
+        for (const l of LOADERS) {
+          await mrSweepInto(mrProjects, [typeFacet("mod"), vf, [`categories:${l}`]], MR_WINDOW);
+        }
+      }
+      await mrSweepInto(mrProjects, [typeFacet("modpack"), vf], MR_WINDOW);
     }
   })();
   const cfSweeps = (async () => {
@@ -298,10 +284,22 @@ async function main() {
     }
   })();
   await Promise.all([mrSweeps, cfSweeps]);
-  const mrDl = attribute(mrProjects, releaseSet);
-  const cfDl = attribute(cfProjects, releaseSet);
+  const mrDl = attributeDownloads(mrProjects.values(), releaseSet);
+  const exactDl = cfExact?.downloads;
+  const cfDl = exactDl
+    ? {
+        perVersion: new Map(Object.entries(exactDl.versions).map(([v, d]) => [v, d.dl])),
+        perVersionW: new Map(Object.entries(exactDl.versions).map(([v, d]) => [v, d.dlW])),
+        perFamily: new Map(Object.entries(exactDl.families).map(([f, d]) => [f, d.dl])),
+        perFamilyW: new Map(Object.entries(exactDl.families).map(([f, d]) => [f, d.dlW])),
+        total: exactDl.total,
+        projects: exactDl.projects,
+      }
+    : attributeDownloads(cfProjects.values(), releaseSet);
   recordCatFactors(cfProjects, releaseSet);
-  console.log(`  swept ${cfDl.projects} CurseForge / ${mrDl.projects} Modrinth projects`);
+  console.log(exactDl
+    ? `  CurseForge downloads from full mirror catalog (${cfDl.projects} projects), swept ${mrDl.projects} Modrinth projects`
+    : `  swept ${cfDl.projects} CurseForge / ${mrDl.projects} Modrinth projects (no fresh mirror downloads)`);
   console.log(`  measured category factors: mods ${factorFor(CLASS_MODS).toFixed(2)}, modpacks ${factorFor(CLASS_MODPACKS).toFixed(2)}`);
 
   console.log("Fetching file-level activity for sampled Modrinth mods...");
@@ -340,7 +338,7 @@ async function main() {
   for (const [key, members] of families) {
     const vs = members.map((m) => m.version);
     const typeId = cfTypeId.get(key);
-    const cfFamilyParams = typeId
+    const cfFamilyParams: Record<string, string | number> = typeId
       ? { gameVersionTypeId: typeId }
       : { gameVersion: key }; // fallback: exact-tag match undercounts the family
     const sampleFrame = familyTopIds.get(key) ?? [];

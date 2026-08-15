@@ -13,16 +13,20 @@
  *
  * The mirror lives gzipped in data/mirror/ (gitignored; cached between CI
  * runs). Each run validates itself against a few slices with exact API
- * counts, then writes data/cf-exact.json — totals, per-family, and
- * per-version counts that fetch-data uses instead of estimating.
+ * counts, then writes data/cf-exact.json — totals, per-family/per-version
+ * counts, and full-catalog download attribution (each project's download
+ * count is recorded as it is swept) that fetch-data uses instead of
+ * estimating from top-N search sweeps. Download counts of projects that
+ * haven't been modified since the last full seed refresh weekly.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
 import {
   CF_CAP, CF_EXACT_PATH, CF_LOADERS, CLASS_MODS, CLASS_MODPACKS, DATA_DIR,
-  cfSearchFactory, familyOf, fetchCfCategoryIds, fetchReleaseFamilies,
-  makeCfClient, makeMrClient, type CfExact, type MrTag,
+  attributeDownloads, cfSearchFactory, familyOf, fetchCfCategoryIds,
+  fetchReleaseFamilies, makeCfClient, makeMrClient,
+  type CfExact, type CfExactDl, type MrTag,
 } from "./shared";
 
 const MIRROR_DIR = resolve(DATA_DIR, "mirror");
@@ -52,6 +56,8 @@ interface MirrorProject {
   d: string;
   /** distinct game versions from latestFilesIndexes */
   v: string[];
+  /** downloadCount (as of the last time this project was swept) */
+  dl: number;
 }
 /** A seed slice that exceeded pageable coverage; counts touching it are
  *  near-exact lower bounds and get flagged approximate. */
@@ -67,7 +73,11 @@ interface Mirror {
 
 function loadMirror(): Mirror | null {
   if (!existsSync(MIRROR_PATH)) return null;
-  return JSON.parse(gunzipSync(readFileSync(MIRROR_PATH)).toString("utf8")) as Mirror;
+  const mirror = JSON.parse(gunzipSync(readFileSync(MIRROR_PATH)).toString("utf8")) as Mirror;
+  // mirrors from before download counts were recorded can't be fixed
+  // incrementally — treat them as missing to trigger a full reseed
+  for (const p of Object.values(mirror.projects)) return p.dl !== undefined ? mirror : null;
+  return null;
 }
 function saveMirror(mirror: Mirror) {
   mkdirSync(MIRROR_DIR, { recursive: true });
@@ -75,12 +85,14 @@ function saveMirror(mirror: Mirror) {
 }
 
 function record(store: Map<number, MirrorProject>, classId: number, mod: {
-  id: number; dateModified?: string; latestFilesIndexes: { gameVersion: string }[];
+  id: number; dateModified?: string; downloadCount: number;
+  latestFilesIndexes: { gameVersion: string }[];
 }) {
   store.set(mod.id, {
     c: classId,
     d: mod.dateModified ?? "",
     v: [...new Set(mod.latestFilesIndexes.map((f) => f.gameVersion))],
+    dl: mod.downloadCount,
   });
 }
 
@@ -299,6 +311,24 @@ function computeCounts(mirror: Mirror, families: Map<string, MrTag[]>): CfExact 
     };
   }
 
+  // download attribution over the whole catalog — reaches the long tail that
+  // fetch-data's top-N search sweeps cannot
+  const dl = attributeDownloads(
+    Object.values(mirror.projects).map((p) => ({ downloads: p.dl ?? 0, versions: p.v })),
+    releaseSet,
+  );
+  const dlRecord = (raw: Map<string, number>, weighted: Map<string, number>) =>
+    Object.fromEntries(
+      [...raw].map(([k, v]): [string, CfExactDl] =>
+        [k, { dl: v, dlW: Math.round(weighted.get(k) ?? 0) }]),
+    );
+  out.downloads = {
+    projects: dl.projects,
+    total: dl.total,
+    families: dlRecord(dl.perFamily, dl.perFamilyW),
+    versions: dlRecord(dl.perVersion, dl.perVersionW),
+  };
+
   // slices that exceeded pageable coverage are lower bounds, not exact
   for (const d of mirror.dirty ?? []) {
     const flag = d.c === CLASS_MODS ? ("modsApprox" as const) : ("modpacksApprox" as const);
@@ -359,7 +389,7 @@ async function main() {
   await validate(exact);
   writeFileSync(CF_EXACT_PATH, JSON.stringify(exact, null, 1));
   const famCount = Object.keys(exact.families).length;
-  console.log(`Wrote data/cf-exact.json (totals + ${famCount} families, per-version counts)`);
+  console.log(`Wrote data/cf-exact.json (totals + ${famCount} families, per-version counts, downloads over ${exact.downloads!.projects} projects)`);
 }
 
 main().catch((e) => {
