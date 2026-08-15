@@ -39,12 +39,7 @@ const loaderNames = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', qu
     <div class="tile" style="--tile-accent: var(--gold)">
       <div class="k">Total downloads</div>
       <div class="v">{fmt(totalDownloads)}</div>
-      <div class="d">across {fmt(data.sweptProjects.cf + data.sweptProjects.mr)} indexed projects</div>
-    </div>
-    <div class="tile" style="--tile-accent: var(--forge)">
-      <div class="k">Projects tracked</div>
-      <div class="v">{data.totals.cf.modsApprox ? '~' : ''}{fmt(totalProjects)}</div>
-      <div class="d">mods + modpacks on both platforms</div>
+      <div class="d">across {data.totals.cf.modsApprox ? '~' : ''}{fmt(totalProjects)} mods + modpacks on both platforms</div>
     </div>
     <div class="tile" style="--tile-accent: var(--quilt)">
       <div class="k">Top loader</div>
