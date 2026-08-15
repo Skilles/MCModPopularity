@@ -29,9 +29,9 @@ const FORCE = process.argv.includes("--force");
 const THRESHOLD = 0.01;
 
 /** Modrinth sweeps page every query to the search index's 10k result window
- *  (globally and per family); families over the window get an extra
- *  per-loader partition pass. Projects are deduped by id before attribution,
- *  so together this covers nearly the whole catalog. */
+ *  (globally and per family); families over the window get extra per-loader
+ *  and per-category partition passes. Projects are deduped by id before
+ *  attribution, so together this covers nearly the whole catalog. */
 const MR_WINDOW = 10_000;
 /** CurseForge sweep depths (top projects by downloads). These only feed the
  *  category-factor measurement and the download fallback for when
@@ -256,6 +256,11 @@ async function main() {
   /** Per family: Modrinth mod ids ordered by downloads (activity sample frame). */
   const familyTopIds = new Map<string, string[]>();
   const mrSweeps = (async () => {
+    // loaders and content categories share the categories facet; both slice a
+    // capped family into partitions small enough for the search window
+    const modCategories = (await mr<{ name: string; project_type: string }[]>(`${MODRINTH}/tag/category`))
+      .filter((c) => c.project_type === "mod")
+      .map((c) => c.name);
     await mrSweepInto(mrProjects, [typeFacet("mod")], MR_WINDOW);
     await mrSweepInto(mrProjects, [typeFacet("modpack")], MR_WINDOW);
     for (const [key, members] of families) {
@@ -264,10 +269,11 @@ async function main() {
       await mrSweepInto(mrProjects, [typeFacet("mod"), vf], MR_WINDOW, ordered);
       familyTopIds.set(key, ordered.slice(0, ACTIVITY_SAMPLE));
       if (ordered.length >= MR_WINDOW) {
-        // family exceeds the search window — per-loader partitions reach most
-        // of the tail (only loader-untagged projects past 10k stay missed)
-        for (const l of LOADERS) {
-          await mrSweepInto(mrProjects, [typeFacet("mod"), vf, [`categories:${l}`]], MR_WINDOW);
+        // family exceeds the search window — per-loader and per-category
+        // partitions reach the tail (only projects past 10k in every slice
+        // they belong to stay missed)
+        for (const slice of [...LOADERS, ...modCategories]) {
+          await mrSweepInto(mrProjects, [typeFacet("mod"), vf, [`categories:${slice}`]], MR_WINDOW);
         }
       }
       await mrSweepInto(mrProjects, [typeFacet("modpack"), vf], MR_WINDOW);

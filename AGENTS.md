@@ -31,9 +31,10 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
   attribution covers the full ~240k-project catalog; dormant projects'
   counts refresh on the weekly reseed), with the same staleness fallback to
   top-N search sweeps. Modrinth downloads come from sweeps paged to the
-  search API's 10k result window — global plus per-family, with a
-  per-loader partition pass for families over the window — deduplicated by
-  project id; that covers most of the (much smaller) Modrinth catalog.
+  search API's 10k result window — global plus per-family, with per-loader
+  and per-category partition passes for families over the window —
+  deduplicated by project id; that covers nearly the whole (much smaller)
+  Modrinth catalog.
   Activity is file-accurate: the top ~150 Modrinth mods per family have
   their full version history fetched, and a mod is "active" for a version
   only if it published a file for that version in the last 90 days
