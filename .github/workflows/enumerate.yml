@@ -42,8 +42,8 @@ jobs:
       - name: Commit exact counts
         run: |
           if [[ -n "$(git status --porcelain data)" ]]; then
-            git config user.name "Bilal Madi"
-            git config user.email "bilal@bilalmadi.com"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/cf-exact.json
             git commit -m "Reseed exact counts $(date -u +%F)"
             git pull --rebase

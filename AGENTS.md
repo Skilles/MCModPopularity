@@ -7,7 +7,9 @@ Deployed to GitHub Pages, data refreshed daily by GitHub Actions.
 ## Conventions
 
 - Package manager: **pnpm** (never npm/yarn).
-- Commits: succinct one-line messages, authored by Bilal Madi only — **no co-author tags**.
+- Commits: succinct one-line messages, authored by Bilal Madi only — **no
+  co-author tags**. Automated data commits from the workflows are the
+  exception: they are authored by `github-actions[bot]`.
 - `CURSEFORGE_API_KEY` lives in `.env` locally (gitignored) and as a repo Actions secret.
 
 ## Architecture

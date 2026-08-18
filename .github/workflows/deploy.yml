@@ -63,8 +63,8 @@ jobs:
         if: github.event_name != 'push'
         run: |
           if [[ -n "$(git status --porcelain data)" ]]; then
-            git config user.name "Bilal Madi"
-            git config user.email "bilal@bilalmadi.com"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data
             git commit -m "Update data $(date -u +%F)"
             git push
