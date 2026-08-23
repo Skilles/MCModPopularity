@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so a rebase onto a concurrent push has a merge base.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -41,11 +44,21 @@ jobs:
 
       - name: Commit exact counts
         run: |
-          if [[ -n "$(git status --porcelain data)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/cf-exact.json
-            git commit -m "Reseed exact counts $(date -u +%F)"
-            git pull --rebase
-            git push
+          if [[ -z "$(git status --porcelain data/cf-exact.json)" ]]; then
+            exit 0
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cf-exact.json
+          git commit -m "Reseed exact counts $(date -u +%F)"
+          # The daily deploy workflow also pushes to master; retry onto whatever
+          # the remote now has, keeping this full reseed's counts on conflict.
+          for attempt in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push rejected (attempt $attempt), rebasing onto origin/master"
+            sleep $((attempt * 5))
+            git fetch origin master
+            git rebase -X theirs origin/master || { git rebase --abort; exit 1; }
+          done
+          echo "::error::could not push exact counts after 5 attempts"
+          exit 1

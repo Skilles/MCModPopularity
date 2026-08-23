@@ -24,6 +24,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so a rebase onto a concurrent push has a merge base.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -62,16 +65,30 @@ jobs:
         id: data
         if: github.event_name != 'push'
         run: |
-          if [[ -n "$(git status --porcelain data)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data
-            git commit -m "Update data $(date -u +%F)"
-            git push
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
+          if [[ -z "$(git status --porcelain data)" ]]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "Update data $(date -u +%F)"
+          # The weekly reseed workflow also pushes to master and can land while
+          # this run is fetching, so retry onto whatever the remote now has.
+          # Conflicts keep this run's data files: latest.json was computed from
+          # them, and the next reseed/refresh reconciles cf-exact.json anyway.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "push rejected (attempt $attempt), rebasing onto origin/master"
+            sleep $((attempt * 5))
+            git fetch origin master
+            git rebase -X theirs origin/master || { git rebase --abort; exit 1; }
+          done
+          echo "::error::could not push updated data after 5 attempts"
+          exit 1
 
       - name: Build
         if: github.event_name == 'push' || steps.data.outputs.changed == 'true'
