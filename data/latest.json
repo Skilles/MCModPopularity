@@ -1,31 +1,31 @@
 {
- "generatedAt": "2026-09-28T13:57:37.138Z",
+ "generatedAt": "2026-09-29T12:49:14.173Z",
  "sweepSize": {
   "mods": 10000,
   "modpacks": 5000
  },
  "sweptProjects": {
-  "cf": 251521,
-  "mr": 88406
+  "cf": 251590,
+  "mr": 88359
  },
  "activeDays": 90,
  "activitySample": 150,
- "cfExactFrom": "2026-09-28T13:07:05.210Z",
+ "cfExactFrom": "2026-09-29T12:16:50.578Z",
  "cfCategoryFactor": {
-  "mods": 2.389,
+  "mods": 2.39,
   "modpacks": 3.655
  },
  "totals": {
   "cf": {
-   "mods": 121625,
+   "mods": 121630,
    "modsApprox": true,
-   "modpacks": 129896,
-   "downloads": 117580836610
+   "modpacks": 129960,
+   "downloads": 117582731978
   },
   "mr": {
-   "mods": 76418,
-   "modpacks": 18446,
-   "downloads": 17313775600
+   "mods": 76337,
+   "modpacks": 18458,
+   "downloads": 17341661357
   }
  },
  "families": [
@@ -33,31 +33,31 @@
    "key": "26.3",
    "date": "2026-09-15",
    "mr": {
-    "mods": 5609,
-    "modpacks": 251,
+    "mods": 5817,
+    "modpacks": 274,
     "activity": {
      "sampled": 150,
-     "active": 147
+     "active": 146
     },
-    "downloads": 8929157852,
-    "downloadsWeighted": 1081487690,
+    "downloads": 9200685120,
+    "downloadsWeighted": 1114806827,
     "loaders": {
-     "forge": 1541,
-     "fabric": 5394,
-     "quilt": 1697,
-     "neoforge": 2962
+     "forge": 1616,
+     "fabric": 5596,
+     "quilt": 1759,
+     "neoforge": 3106
     }
    },
    "cf": {
-    "mods": 3294,
-    "modpacks": 68,
-    "downloads": 26145905741,
-    "downloadsWeighted": 2570046173,
+    "mods": 3303,
+    "modpacks": 75,
+    "downloads": 26253312651,
+    "downloadsWeighted": 2581275637,
     "loaders": {
-     "forge": 1025,
-     "fabric": 3666,
-     "quilt": 894,
-     "neoforge": 2584
+     "forge": 1068,
+     "fabric": 3829,
+     "quilt": 916,
+     "neoforge": 2704
     }
    },
    "versions": [
@@ -65,20 +65,20 @@
      "v": "26.3",
      "date": "2026-09-15",
      "mr": {
-      "mods": 5609,
-      "modpacks": 251,
+      "mods": 5817,
+      "modpacks": 274,
       "activity": {
        "sampled": 150,
-       "active": 147
+       "active": 146
       },
-      "downloads": 8929157852,
-      "downloadsWeighted": 292110666
+      "downloads": 9200685120,
+      "downloadsWeighted": 302913590
      },
      "cf": {
-      "mods": 3294,
-      "modpacks": 68,
-      "downloads": 26145905741,
-      "downloadsWeighted": 779018079
+      "mods": 3303,
+      "modpacks": 75,
+      "downloads": 26253312651,
+      "downloadsWeighted": 783115681
      }
     }
    ]
@@ -87,31 +87,31 @@
    "key": "26.2",
    "date": "2026-06-16",
    "mr": {
-    "mods": 12864,
-    "modpacks": 1314,
+    "mods": 12888,
+    "modpacks": 1330,
     "activity": {
      "sampled": 150,
-     "active": 109
+     "active": 104
     },
-    "downloads": 10733039315,
-    "downloadsWeighted": 1380977119,
+    "downloads": 10779278315,
+    "downloadsWeighted": 1381711564,
     "loaders": {
-     "forge": 3212,
-     "fabric": 12183,
-     "quilt": 3282,
-     "neoforge": 6266
+     "forge": 3224,
+     "fabric": 12207,
+     "quilt": 3295,
+     "neoforge": 6285
     }
    },
    "cf": {
     "mods": 9285,
-    "modpacks": 730,
-    "downloads": 39682714066,
-    "downloadsWeighted": 4285089162,
+    "modpacks": 735,
+    "downloads": 39683507149,
+    "downloadsWeighted": 4283786503,
     "loaders": {
-     "forge": 2124,
-     "fabric": 8165,
-     "quilt": 1579,
-     "neoforge": 5653
+     "forge": 2135,
+     "fabric": 8220,
+     "quilt": 1585,
+     "neoforge": 5683
     }
    },
    "versions": [
@@ -119,20 +119,20 @@
      "v": "26.2",
      "date": "2026-06-16",
      "mr": {
-      "mods": 12864,
-      "modpacks": 1314,
+      "mods": 12888,
+      "modpacks": 1330,
       "activity": {
        "sampled": 150,
-       "active": 109
+       "active": 104
       },
-      "downloads": 10733039315,
-      "downloadsWeighted": 381352416
+      "downloads": 10779278315,
+      "downloadsWeighted": 382344474
      },
      "cf": {
       "mods": 9285,
-      "modpacks": 730,
-      "downloads": 39682714066,
-      "downloadsWeighted": 1325794328
+      "modpacks": 735,
+      "downloads": 39683507149,
+      "downloadsWeighted": 1325649090
      }
     }
    ]
@@ -141,31 +141,31 @@
    "key": "26.1",
    "date": "2026-04-09",
    "mr": {
-    "mods": 15293,
-    "modpacks": 1492,
+    "mods": 15308,
+    "modpacks": 1496,
     "activity": {
      "sampled": 150,
-     "active": 89
+     "active": 88
     },
-    "downloads": 11854364373,
-    "downloadsWeighted": 1631424857,
+    "downloads": 11877506580,
+    "downloadsWeighted": 1629847523,
     "loaders": {
-     "forge": 3478,
-     "fabric": 13355,
-     "quilt": 3528,
-     "neoforge": 8096
+     "forge": 3490,
+     "fabric": 13366,
+     "quilt": 3538,
+     "neoforge": 8116
     }
    },
    "cf": {
     "mods": 11729,
-    "modpacks": 801,
-    "downloads": 54340058815,
-    "downloadsWeighted": 6642876178,
+    "modpacks": 804,
+    "downloads": 54341633129,
+    "downloadsWeighted": 6641832470,
     "loaders": {
-     "forge": 5929,
-     "fabric": 8680,
-     "quilt": 2209,
-     "neoforge": 8650
+     "forge": 5947,
+     "fabric": 8706,
+     "quilt": 2212,
+     "neoforge": 8686
     }
    },
    "versions": [
@@ -173,60 +173,60 @@
      "v": "26.1",
      "date": "2026-03-24",
      "mr": {
-      "mods": 11330,
-      "modpacks": 446,
+      "mods": 11340,
+      "modpacks": 447,
       "activity": {
        "sampled": 131,
-       "active": 61
+       "active": 60
       },
-      "downloads": 10454412834,
-      "downloadsWeighted": 374184246
+      "downloads": 10473667037,
+      "downloadsWeighted": 374462152
      },
      "cf": {
       "mods": 7020,
       "modpacks": 176,
-      "downloads": 38692573043,
-      "downloadsWeighted": 1380019273
+      "downloads": 38693983935,
+      "downloadsWeighted": 1380030575
      }
     },
     {
      "v": "26.1.1",
      "date": "2026-04-01",
      "mr": {
-      "mods": 10894,
-      "modpacks": 332,
+      "mods": 10902,
+      "modpacks": 333,
       "activity": {
        "sampled": 135,
-       "active": 68
+       "active": 67
       },
-      "downloads": 10551356160,
-      "downloadsWeighted": 390278129
+      "downloads": 10570588920,
+      "downloadsWeighted": 390542755
      },
      "cf": {
       "mods": 6676,
       "modpacks": 139,
-      "downloads": 40539523155,
-      "downloadsWeighted": 1491542596
+      "downloads": 40541072449,
+      "downloadsWeighted": 1491525501
      }
     },
     {
      "v": "26.1.2",
      "date": "2026-04-09",
      "mr": {
-      "mods": 14379,
-      "modpacks": 1315,
+      "mods": 14393,
+      "modpacks": 1319,
       "activity": {
        "sampled": 149,
-       "active": 87
+       "active": 86
       },
-      "downloads": 11763346126,
-      "downloadsWeighted": 482074298
+      "downloads": 11786335410,
+      "downloadsWeighted": 482668526
      },
      "cf": {
       "mods": 11054,
-      "modpacks": 712,
-      "downloads": 53685621039,
-      "downloadsWeighted": 2467426362
+      "modpacks": 715,
+      "downloads": 53687194864,
+      "downloadsWeighted": 2467409343
      }
     }
    ]
@@ -235,31 +235,31 @@
    "key": "1.21",
    "date": "2025-12-09",
    "mr": {
-    "mods": 45882,
-    "modpacks": 10093,
+    "mods": 45817,
+    "modpacks": 10096,
     "activity": {
      "sampled": 150,
      "active": 67
     },
-    "downloads": 15897953416,
-    "downloadsWeighted": 3088686252,
+    "downloads": 15924057496,
+    "downloadsWeighted": 3088319282,
     "loaders": {
-     "forge": 7592,
-     "fabric": 31806,
+     "forge": 7598,
+     "fabric": 31778,
      "quilt": 7056,
-     "neoforge": 25822
+     "neoforge": 25808
     }
    },
    "cf": {
-    "mods": 42346,
-    "modpacks": 18210,
-    "downloads": 83787809364,
-    "downloadsWeighted": 13436411262,
+    "mods": 42347,
+    "modpacks": 18239,
+    "downloads": 83789627129,
+    "downloadsWeighted": 13435456018,
     "loaders": {
-     "forge": 18208,
-     "fabric": 17711,
-     "quilt": 3741,
-     "neoforge": 32190
+     "forge": 18241,
+     "fabric": 17744,
+     "quilt": 3739,
+     "neoforge": 32287
     }
    },
    "versions": [
@@ -273,234 +273,234 @@
        "sampled": 145,
        "active": 29
       },
-      "downloads": 13388679323,
-      "downloadsWeighted": 645256161
+      "downloads": 13410123781,
+      "downloadsWeighted": 645927805
      },
      "cf": {
       "mods": 10285,
       "modpacks": 1435,
-      "downloads": 62652896021,
-      "downloadsWeighted": 3329718121
+      "downloads": 62654454431,
+      "downloadsWeighted": 3329837440
      }
     },
     {
      "v": "1.21.1",
      "date": "2024-08-08",
      "mr": {
-      "mods": 31623,
-      "modpacks": 4935,
+      "mods": 31597,
+      "modpacks": 4938,
       "activity": {
        "sampled": 150,
        "active": 63
       },
-      "downloads": 15634574793,
-      "downloadsWeighted": 1363766605
+      "downloads": 15660233413,
+      "downloadsWeighted": 1365799012
      },
      "cf": {
-      "mods": 33208,
-      "modpacks": 14479,
-      "downloads": 82777781928,
-      "downloadsWeighted": 6617790480
+      "mods": 33209,
+      "modpacks": 14507,
+      "downloads": 82779598923,
+      "downloadsWeighted": 6617846283
      }
     },
     {
      "v": "1.21.2",
      "date": "2024-10-22",
      "mr": {
-      "mods": 11590,
+      "mods": 11588,
       "modpacks": 182,
       "activity": {
        "sampled": 83,
        "active": 14
       },
-      "downloads": 7714165247,
-      "downloadsWeighted": 254060641
+      "downloads": 7727042358,
+      "downloadsWeighted": 254596029
      },
      "cf": {
       "mods": 5475,
       "modpacks": 82,
-      "downloads": 19783844735,
-      "downloadsWeighted": 596346294
+      "downloads": 19783844805,
+      "downloadsWeighted": 596346300
      }
     },
     {
      "v": "1.21.3",
      "date": "2024-10-23",
      "mr": {
-      "mods": 12769,
+      "mods": 12767,
       "modpacks": 493,
       "activity": {
        "sampled": 117,
        "active": 18
       },
-      "downloads": 10454628468,
-      "downloadsWeighted": 359480275
+      "downloads": 10471544165,
+      "downloadsWeighted": 359957576
      },
      "cf": {
       "mods": 6513,
       "modpacks": 191,
-      "downloads": 33083023570,
-      "downloadsWeighted": 1041090795
+      "downloads": 33083062150,
+      "downloadsWeighted": 1041092493
      }
     },
     {
      "v": "1.21.4",
      "date": "2024-12-03",
      "mr": {
-      "mods": 17475,
+      "mods": 17474,
       "modpacks": 1865,
       "activity": {
        "sampled": 131,
-       "active": 22
+       "active": 21
       },
-      "downloads": 11884386784,
-      "downloadsWeighted": 463558431
+      "downloads": 11900920383,
+      "downloadsWeighted": 463696889
      },
      "cf": {
       "mods": 11100,
       "modpacks": 774,
-      "downloads": 44486909034,
-      "downloadsWeighted": 1625950891
+      "downloads": 44487537587,
+      "downloadsWeighted": 1625892608
      }
     },
     {
      "v": "1.21.5",
      "date": "2025-03-25",
      "mr": {
-      "mods": 14874,
-      "modpacks": 1379,
+      "mods": 14839,
+      "modpacks": 1378,
       "activity": {
        "sampled": 121,
        "active": 20
       },
-      "downloads": 11114663351,
-      "downloadsWeighted": 403171795
+      "downloads": 11130345356,
+      "downloadsWeighted": 403296051
      },
      "cf": {
       "mods": 7888,
       "modpacks": 497,
-      "downloads": 39378299347,
-      "downloadsWeighted": 1298003667
+      "downloads": 39378927857,
+      "downloadsWeighted": 1297945382
      }
     },
     {
      "v": "1.21.6",
      "date": "2025-06-17",
      "mr": {
-      "mods": 13169,
-      "modpacks": 628,
+      "mods": 13147,
+      "modpacks": 627,
       "activity": {
        "sampled": 121,
        "active": 14
       },
-      "downloads": 10525409040,
-      "downloadsWeighted": 352320685
+      "downloads": 10541667863,
+      "downloadsWeighted": 352526257
      },
      "cf": {
       "mods": 6435,
       "modpacks": 204,
-      "downloads": 33982077062,
-      "downloadsWeighted": 1016354326
+      "downloads": 33982443628,
+      "downloadsWeighted": 1016284878
      }
     },
     {
      "v": "1.21.7",
      "date": "2025-06-30",
      "mr": {
-      "mods": 13242,
+      "mods": 13221,
       "modpacks": 688,
       "activity": {
        "sampled": 120,
        "active": 13
       },
-      "downloads": 10644131814,
-      "downloadsWeighted": 355408617
+      "downloads": 10660623341,
+      "downloadsWeighted": 355577061
      },
      "cf": {
       "mods": 6435,
       "modpacks": 203,
-      "downloads": 35869930104,
-      "downloadsWeighted": 1069100263
+      "downloads": 35870445351,
+      "downloadsWeighted": 1068942077
      }
     },
     {
      "v": "1.21.8",
      "date": "2025-07-17",
      "mr": {
-      "mods": 17209,
-      "modpacks": 1536,
+      "mods": 17186,
+      "modpacks": 1535,
       "activity": {
        "sampled": 120,
-       "active": 21
+       "active": 20
       },
-      "downloads": 11013888163,
-      "downloadsWeighted": 388070002
+      "downloads": 11031115077,
+      "downloadsWeighted": 388260817
      },
      "cf": {
       "mods": 10835,
       "modpacks": 662,
-      "downloads": 39452675289,
-      "downloadsWeighted": 1284006996
+      "downloads": 39453452175,
+      "downloadsWeighted": 1283860200
      }
     },
     {
      "v": "1.21.9",
      "date": "2025-09-30",
      "mr": {
-      "mods": 12966,
+      "mods": 12953,
       "modpacks": 481,
       "activity": {
        "sampled": 107,
-       "active": 15
+       "active": 14
       },
-      "downloads": 9721523426,
-      "downloadsWeighted": 319322924
+      "downloads": 9736780009,
+      "downloadsWeighted": 319459775
      },
      "cf": {
       "mods": 6004,
       "modpacks": 165,
-      "downloads": 30404974590,
-      "downloadsWeighted": 893489293
+      "downloads": 30405123889,
+      "downloadsWeighted": 893400862
      }
     },
     {
      "v": "1.21.10",
      "date": "2025-10-07",
      "mr": {
-      "mods": 15122,
+      "mods": 15108,
       "modpacks": 1592,
       "activity": {
        "sampled": 118,
-       "active": 22
+       "active": 21
       },
-      "downloads": 10792577318,
-      "downloadsWeighted": 373889654
+      "downloads": 10809572576,
+      "downloadsWeighted": 374068222
      },
      "cf": {
       "mods": 7393,
       "modpacks": 738,
-      "downloads": 37908732807,
-      "downloadsWeighted": 1195307285
+      "downloads": 37909509987,
+      "downloadsWeighted": 1195160806
      }
     },
     {
      "v": "1.21.11",
      "date": "2025-12-09",
      "mr": {
-      "mods": 19278,
-      "modpacks": 2842,
+      "mods": 19274,
+      "modpacks": 2846,
       "activity": {
        "sampled": 118,
-       "active": 41
+       "active": 40
       },
-      "downloads": 11108252956,
-      "downloadsWeighted": 408381563
+      "downloads": 11127212713,
+      "downloadsWeighted": 408650673
      },
      "cf": {
       "mods": 10243,
-      "modpacks": 1344,
-      "downloads": 41013513040,
-      "downloadsWeighted": 1416667925
+      "modpacks": 1345,
+      "downloads": 41014304903,
+      "downloadsWeighted": 1416522048
      }
     }
    ]
@@ -509,32 +509,32 @@
    "key": "1.20",
    "date": "2024-04-29",
    "mr": {
-    "mods": 36666,
-    "modpacks": 8303,
+    "mods": 36654,
+    "modpacks": 8304,
     "activity": {
      "sampled": 150,
      "active": 38
     },
-    "downloads": 16543024563,
-    "downloadsWeighted": 3326487091,
+    "downloads": 16568747289,
+    "downloadsWeighted": 3326365440,
     "loaders": {
-     "forge": 25466,
-     "fabric": 19420,
+     "forge": 25468,
+     "fabric": 19416,
      "quilt": 5472,
-     "neoforge": 7646
+     "neoforge": 7659
     }
    },
    "cf": {
-    "mods": 52670,
+    "mods": 52674,
     "modsApprox": true,
-    "modpacks": 42905,
-    "downloads": 94775352301,
-    "downloadsWeighted": 16249794439,
+    "modpacks": 42927,
+    "downloads": 94777220893,
+    "downloadsWeighted": 16248891029,
     "loaders": {
-     "forge": 45421,
-     "fabric": 14886,
-     "quilt": 3686,
-     "neoforge": 18900
+     "forge": 45504,
+     "fabric": 14924,
+     "quilt": 3687,
+     "neoforge": 18949
     }
    },
    "versions": [
@@ -546,71 +546,71 @@
       "modpacks": 0,
       "activity": {
        "sampled": 133,
-       "active": 20
+       "active": 19
       },
-      "downloads": 12668696842,
-      "downloadsWeighted": 606173418
+      "downloads": 12687633190,
+      "downloadsWeighted": 606645539
      },
      "cf": {
       "mods": 8110,
-      "modpacks": 510,
-      "downloads": 54020118083,
-      "downloadsWeighted": 2607717956
+      "modpacks": 511,
+      "downloads": 54020633779,
+      "downloadsWeighted": 2607560649
      }
     },
     {
      "v": "1.20.1",
      "date": "2023-06-12",
      "mr": {
-      "mods": 34473,
-      "modpacks": 7291,
+      "mods": 34460,
+      "modpacks": 7292,
       "activity": {
        "sampled": 149,
        "active": 38
       },
-      "downloads": 16421851662,
-      "downloadsWeighted": 1562291724
+      "downloads": 16447212072,
+      "downloadsWeighted": 1564352829
      },
      "cf": {
-      "mods": 51173,
+      "mods": 51177,
       "modsApprox": true,
-      "modpacks": 41938,
-      "downloads": 93991142701,
-      "downloadsWeighted": 8549852987
+      "modpacks": 41960,
+      "downloads": 93993011293,
+      "downloadsWeighted": 8549959969
      }
     },
     {
      "v": "1.20.2",
      "date": "2023-09-20",
      "mr": {
-      "mods": 11688,
+      "mods": 11675,
       "modpacks": 585,
       "activity": {
        "sampled": 123,
-       "active": 12
+       "active": 11
       },
-      "downloads": 11456436501,
-      "downloadsWeighted": 446761681
+      "downloads": 11473854099,
+      "downloadsWeighted": 447116166
      },
      "cf": {
       "mods": 7431,
       "modpacks": 475,
-      "downloads": 42662023369,
-      "downloadsWeighted": 1579477855
+      "downloads": 42662390001,
+      "downloadsWeighted": 1579408462
      }
     },
     {
      "v": "1.20.3",
      "date": "2023-12-04",
      "mr": {
-      "mods": 9733,
+      "mods": 9720,
       "modpacks": 107,
       "activity": {
        "sampled": 91,
-       "active": 8
+       "active": 7
       },
-      "downloads": 8632223906,
-      "downloadsWeighted": 313416575
+      "downloads": 8645585148,
+      "downloadsWeighted": 313702992
      },
      "cf": {
       "mods": 5253,
@@ -623,34 +623,34 @@
      "v": "1.20.4",
      "date": "2023-12-07",
      "mr": {
-      "mods": 13533,
+      "mods": 13521,
       "modpacks": 1255,
       "activity": {
        "sampled": 139,
-       "active": 15
+       "active": 14
       },
-      "downloads": 12820274093,
-      "downloadsWeighted": 552363766
+      "downloads": 12839625438,
+      "downloadsWeighted": 552826978
      },
      "cf": {
-      "mods": 9429,
+      "mods": 9430,
       "modpacks": 772,
-      "downloads": 59474616238,
-      "downloadsWeighted": 2706065178
+      "downloads": 59475244527,
+      "downloadsWeighted": 2706007146
      }
     },
     {
      "v": "1.20.5",
      "date": "2024-04-23",
      "mr": {
-      "mods": 8632,
+      "mods": 8617,
       "modpacks": 144,
       "activity": {
        "sampled": 93,
        "active": 6
       },
-      "downloads": 8749198747,
-      "downloadsWeighted": 299584647
+      "downloads": 8763169979,
+      "downloadsWeighted": 300005711
      },
      "cf": {
       "mods": 4242,
@@ -663,20 +663,20 @@
      "v": "1.20.6",
      "date": "2024-04-29",
      "mr": {
-      "mods": 10791,
+      "mods": 10783,
       "modpacks": 487,
       "activity": {
        "sampled": 119,
        "active": 12
       },
-      "downloads": 10777460198,
-      "downloadsWeighted": 390043972
+      "downloads": 10794418626,
+      "downloadsWeighted": 390372929
      },
      "cf": {
-      "mods": 6789,
+      "mods": 6790,
       "modpacks": 238,
-      "downloads": 39493657905,
-      "downloadsWeighted": 1368741407
+      "downloads": 39494039149,
+      "downloadsWeighted": 1368672726
      }
     }
    ]
@@ -685,31 +685,31 @@
    "key": "1.19",
    "date": "2023-03-14",
    "mr": {
-    "mods": 14350,
-    "modpacks": 1530,
+    "mods": 14352,
+    "modpacks": 1529,
     "activity": {
      "sampled": 150,
      "active": 19
     },
-    "downloads": 14225435748,
-    "downloadsWeighted": 2258963624,
+    "downloads": 14246448902,
+    "downloadsWeighted": 2257976606,
     "loaders": {
-     "forge": 9079,
-     "fabric": 8929,
-     "quilt": 3595,
-     "neoforge": 1099
+     "forge": 9081,
+     "fabric": 8930,
+     "quilt": 3596,
+     "neoforge": 1101
     }
    },
    "cf": {
     "mods": 22002,
-    "modpacks": 14775,
-    "downloads": 87973582996,
-    "downloadsWeighted": 12742174337,
+    "modpacks": 14777,
+    "downloads": 87974544911,
+    "downloadsWeighted": 12740941107,
     "loaders": {
-     "forge": 18967,
-     "fabric": 9709,
+     "forge": 18972,
+     "fabric": 9714,
      "quilt": 2887,
-     "neoforge": 7932
+     "neoforge": 7940
     }
    },
    "versions": [
@@ -723,14 +723,14 @@
        "sampled": 114,
        "active": 8
       },
-      "downloads": 9986129647,
-      "downloadsWeighted": 386591294
+      "downloads": 10000939461,
+      "downloadsWeighted": 386878612
      },
      "cf": {
       "mods": 7226,
       "modpacks": 998,
-      "downloads": 58290309608,
-      "downloadsWeighted": 2477757037
+      "downloads": 58290899148,
+      "downloadsWeighted": 2477697276
      }
     },
     {
@@ -743,74 +743,74 @@
        "sampled": 116,
        "active": 10
       },
-      "downloads": 10095208514,
-      "downloadsWeighted": 375459070
+      "downloads": 10110289448,
+      "downloadsWeighted": 375736251
      },
      "cf": {
       "mods": 6265,
       "modpacks": 314,
-      "downloads": 54504371775,
-      "downloadsWeighted": 2264100040
+      "downloads": 54504961550,
+      "downloadsWeighted": 2264040293
      }
     },
     {
      "v": "1.19.2",
      "date": "2022-08-05",
      "mr": {
-      "mods": 12207,
+      "mods": 12209,
       "modpacks": 1070,
       "activity": {
        "sampled": 147,
        "active": 17
       },
-      "downloads": 13861036501,
-      "downloadsWeighted": 850091151
+      "downloads": 13881463452,
+      "downloadsWeighted": 851011611
      },
      "cf": {
       "mods": 18984,
-      "modpacks": 13200,
-      "downloads": 86790768492,
-      "downloadsWeighted": 5882368565
+      "modpacks": 13202,
+      "downloads": 86791715105,
+      "downloadsWeighted": 5882270953
      }
     },
     {
      "v": "1.19.3",
      "date": "2022-12-07",
      "mr": {
-      "mods": 6877,
+      "mods": 6878,
       "modpacks": 255,
       "activity": {
        "sampled": 132,
        "active": 8
       },
-      "downloads": 11409984182,
-      "downloadsWeighted": 443179097
+      "downloads": 11426720986,
+      "downloadsWeighted": 443479193
      },
      "cf": {
       "mods": 6670,
       "modpacks": 672,
-      "downloads": 57866015445,
-      "downloadsWeighted": 2393545484
+      "downloads": 57866551892,
+      "downloadsWeighted": 2393391194
      }
     },
     {
      "v": "1.19.4",
      "date": "2023-03-14",
      "mr": {
-      "mods": 9060,
-      "modpacks": 520,
+      "mods": 9061,
+      "modpacks": 519,
       "activity": {
        "sampled": 141,
        "active": 13
       },
-      "downloads": 12281578322,
-      "downloadsWeighted": 522043159
+      "downloads": 12299709423,
+      "downloadsWeighted": 522440164
      },
      "cf": {
       "mods": 9935,
       "modpacks": 825,
-      "downloads": 59936461411,
-      "downloadsWeighted": 2681588863
+      "downloads": 59937013209,
+      "downloadsWeighted": 2681435414
      }
     }
    ]
@@ -825,25 +825,25 @@
      "sampled": 150,
      "active": 16
     },
-    "downloads": 11931170430,
-    "downloadsWeighted": 1639842513,
+    "downloads": 11948945529,
+    "downloadsWeighted": 1638992441,
     "loaders": {
-     "forge": 6027,
-     "fabric": 5691,
-     "quilt": 2121,
-     "neoforge": 794
+     "forge": 6028,
+     "fabric": 5690,
+     "quilt": 2122,
+     "neoforge": 796
     }
    },
    "cf": {
     "mods": 17086,
-    "modpacks": 11308,
-    "downloads": 83013091563,
-    "downloadsWeighted": 11300166558,
+    "modpacks": 11309,
+    "downloads": 83013882218,
+    "downloadsWeighted": 11298877569,
     "loaders": {
-     "forge": 15109,
-     "fabric": 7434,
-     "quilt": 2176,
-     "neoforge": 5846
+     "forge": 15106,
+     "fabric": 7435,
+     "quilt": 2175,
+     "neoforge": 5849
     }
    },
    "versions": [
@@ -857,14 +857,14 @@
        "sampled": 92,
        "active": 8
       },
-      "downloads": 6973444729,
-      "downloadsWeighted": 217864112
+      "downloads": 6984324602,
+      "downloadsWeighted": 218142623
      },
      "cf": {
       "mods": 5265,
       "modpacks": 480,
-      "downloads": 44452775863,
-      "downloadsWeighted": 1717109703
+      "downloads": 44452999413,
+      "downloadsWeighted": 1717119423
      }
     },
     {
@@ -877,14 +877,14 @@
        "sampled": 100,
        "active": 8
       },
-      "downloads": 7631038729,
-      "downloadsWeighted": 250007495
+      "downloads": 7642820045,
+      "downloadsWeighted": 250240135
      },
      "cf": {
       "mods": 6820,
       "modpacks": 2198,
-      "downloads": 61556659146,
-      "downloadsWeighted": 2813149086
+      "downloads": 61557248686,
+      "downloadsWeighted": 2813089325
      }
     },
     {
@@ -897,14 +897,14 @@
        "sampled": 150,
        "active": 16
       },
-      "downloads": 11895051485,
-      "downloadsWeighted": 599036856
+      "downloads": 11912788671,
+      "downloadsWeighted": 599819412
      },
      "cf": {
       "mods": 16152,
-      "modpacks": 9555,
-      "downloads": 82501345441,
-      "downloadsWeighted": 5183970476
+      "modpacks": 9556,
+      "downloads": 82502136096,
+      "downloadsWeighted": 5183831064
      }
     }
    ]
@@ -913,26 +913,26 @@
    "key": "1.17",
    "date": "2021-07-06",
    "mr": {
-    "mods": 4072,
+    "mods": 4073,
     "modpacks": 123,
     "activity": {
      "sampled": 150,
      "active": 13
     },
-    "downloads": 7332346399,
-    "downloadsWeighted": 805217469,
+    "downloads": 7343753156,
+    "downloadsWeighted": 804311013,
     "loaders": {
-     "forge": 2112,
-     "fabric": 3144,
-     "quilt": 1034,
-     "neoforge": 551
+     "forge": 2113,
+     "fabric": 3145,
+     "quilt": 1035,
+     "neoforge": 553
     }
    },
    "cf": {
     "mods": 7907,
     "modpacks": 1029,
-    "downloads": 47228653689,
-    "downloadsWeighted": 5061627338,
+    "downloads": 47229257739,
+    "downloadsWeighted": 5060934600,
     "loaders": {
      "forge": 5955,
      "fabric": 4724,
@@ -951,8 +951,8 @@
        "sampled": 99,
        "active": 11
       },
-      "downloads": 5059645390,
-      "downloadsWeighted": 142203847
+      "downloads": 5067800550,
+      "downloadsWeighted": 142367833
      },
      "cf": {
       "mods": 3392,
@@ -965,20 +965,20 @@
      "v": "1.17.1",
      "date": "2021-07-06",
      "mr": {
-      "mods": 3962,
+      "mods": 3963,
       "modpacks": 120,
       "activity": {
        "sampled": 149,
        "active": 13
       },
-      "downloads": 7300152665,
-      "downloadsWeighted": 230021144
+      "downloads": 7311526054,
+      "downloadsWeighted": 230204011
      },
      "cf": {
       "mods": 7570,
       "modpacks": 918,
-      "downloads": 47019447277,
-      "downloadsWeighted": 1865376175
+      "downloads": 47020051327,
+      "downloadsWeighted": 1865317139
      }
     }
    ]
@@ -987,31 +987,31 @@
    "key": "1.16",
    "date": "2021-01-14",
    "mr": {
-    "mods": 5972,
+    "mods": 5973,
     "modpacks": 302,
     "activity": {
      "sampled": 150,
      "active": 22
     },
-    "downloads": 8095348021,
-    "downloadsWeighted": 940644811,
+    "downloads": 8107751850,
+    "downloadsWeighted": 939930113,
     "loaders": {
-     "forge": 4260,
+     "forge": 4262,
      "fabric": 3122,
-     "quilt": 875,
-     "neoforge": 508
+     "quilt": 876,
+     "neoforge": 510
     }
    },
    "cf": {
     "mods": 18989,
     "modpacks": 16872,
-    "downloads": 73152205664,
-    "downloadsWeighted": 9631056548,
+    "downloads": 73152810923,
+    "downloadsWeighted": 9630364015,
     "loaders": {
-     "forge": 18215,
+     "forge": 18212,
      "fabric": 5767,
      "quilt": 1361,
-     "neoforge": 4233
+     "neoforge": 4235
     }
    },
    "versions": [
@@ -1019,14 +1019,14 @@
      "v": "1.16",
      "date": "2020-06-23",
      "mr": {
-      "mods": 1521,
+      "mods": 1520,
       "modpacks": 12,
       "activity": {
        "sampled": 39,
        "active": 8
       },
-      "downloads": 2064468820,
-      "downloadsWeighted": 47751770
+      "downloads": 2067827674,
+      "downloadsWeighted": 47791608
      },
      "cf": {
       "mods": 2589,
@@ -1039,100 +1039,100 @@
      "v": "1.16.1",
      "date": "2020-06-24",
      "mr": {
-      "mods": 1725,
+      "mods": 1724,
       "modpacks": 20,
       "activity": {
        "sampled": 51,
        "active": 9
       },
-      "downloads": 2674620921,
-      "downloadsWeighted": 68450884
+      "downloads": 2678960286,
+      "downloadsWeighted": 68521875
      },
      "cf": {
       "mods": 4156,
       "modpacks": 459,
-      "downloads": 37404791740,
-      "downloadsWeighted": 1463817748
+      "downloads": 37405018509,
+      "downloadsWeighted": 1463776700
      }
     },
     {
      "v": "1.16.2",
      "date": "2020-08-11",
      "mr": {
-      "mods": 1927,
+      "mods": 1926,
       "modpacks": 14,
       "activity": {
        "sampled": 64,
        "active": 9
       },
-      "downloads": 3522702709,
-      "downloadsWeighted": 90238469
+      "downloads": 3528221946,
+      "downloadsWeighted": 90339116
      },
      "cf": {
       "mods": 4111,
       "modpacks": 283,
-      "downloads": 37808672801,
-      "downloadsWeighted": 1417546418
+      "downloads": 37808899570,
+      "downloadsWeighted": 1417505370
      }
     },
     {
      "v": "1.16.3",
      "date": "2020-09-10",
      "mr": {
-      "mods": 2140,
+      "mods": 2139,
       "modpacks": 16,
       "activity": {
        "sampled": 73,
        "active": 9
       },
-      "downloads": 4027023291,
-      "downloadsWeighted": 108399434
+      "downloads": 4033343246,
+      "downloadsWeighted": 108528053
      },
      "cf": {
       "mods": 5142,
       "modpacks": 581,
-      "downloads": 51484835406,
-      "downloadsWeighted": 2302025454
+      "downloads": 51485285725,
+      "downloadsWeighted": 2301994125
      }
     },
     {
      "v": "1.16.4",
      "date": "2020-10-29",
      "mr": {
-      "mods": 2544,
+      "mods": 2543,
       "modpacks": 17,
       "activity": {
        "sampled": 85,
        "active": 9
       },
-      "downloads": 4777916014,
-      "downloadsWeighted": 141041920
+      "downloads": 4785347243,
+      "downloadsWeighted": 141214268
      },
      "cf": {
       "mods": 6773,
       "modpacks": 1712,
-      "downloads": 59148037653,
-      "downloadsWeighted": 2851055216
+      "downloads": 59148487972,
+      "downloadsWeighted": 2851023887
      }
     },
     {
      "v": "1.16.5",
      "date": "2021-01-14",
      "mr": {
-      "mods": 5796,
+      "mods": 5797,
       "modpacks": 295,
       "activity": {
        "sampled": 149,
        "active": 22
       },
-      "downloads": 8055344510,
-      "downloadsWeighted": 332616533
+      "downloads": 8067710753,
+      "downloadsWeighted": 332957115
      },
      "cf": {
       "mods": 17550,
       "modpacks": 15473,
-      "downloads": 72810313617,
-      "downloadsWeighted": 4491716506
+      "downloads": 72810918876,
+      "downloadsWeighted": 4491657649
      }
     }
    ]
@@ -1141,31 +1141,31 @@
    "key": "1.15",
    "date": "2020-01-17",
    "mr": {
-    "mods": 1701,
+    "mods": 1702,
     "modpacks": 22,
     "activity": {
      "sampled": 150,
      "active": 16
     },
-    "downloads": 2970317076,
-    "downloadsWeighted": 260066072,
+    "downloads": 2975030589,
+    "downloadsWeighted": 259875792,
     "loaders": {
-     "forge": 1163,
-     "fabric": 1082,
-     "quilt": 554,
-     "neoforge": 370
+     "forge": 1164,
+     "fabric": 1083,
+     "quilt": 555,
+     "neoforge": 372
     }
    },
    "cf": {
     "mods": 6635,
     "modpacks": 1319,
-    "downloads": 47703540429,
-    "downloadsWeighted": 4913421114,
+    "downloads": 47703781708,
+    "downloadsWeighted": 4913012454,
     "loaders": {
-     "forge": 6033,
-     "fabric": 2112,
+     "forge": 6035,
+     "fabric": 2113,
      "quilt": 682,
-     "neoforge": 1683
+     "neoforge": 1684
     }
    },
    "versions": [
@@ -1179,8 +1179,8 @@
        "sampled": 71,
        "active": 12
       },
-      "downloads": 1553248271,
-      "downloadsWeighted": 33239654
+      "downloads": 1555831861,
+      "downloadsWeighted": 33261437
      },
      "cf": {
       "mods": 1365,
@@ -1199,8 +1199,8 @@
        "sampled": 78,
        "active": 12
       },
-      "downloads": 1695940433,
-      "downloadsWeighted": 37112379
+      "downloads": 1698728037,
+      "downloadsWeighted": 37139651
      },
      "cf": {
       "mods": 1780,
@@ -1213,20 +1213,20 @@
      "v": "1.15.2",
      "date": "2020-01-17",
      "mr": {
-      "mods": 1686,
+      "mods": 1687,
       "modpacks": 22,
       "activity": {
        "sampled": 150,
        "active": 16
       },
-      "downloads": 2969776450,
-      "downloadsWeighted": 84565246
+      "downloads": 2974489723,
+      "downloadsWeighted": 84661787
      },
      "cf": {
       "mods": 6486,
       "modpacks": 1303,
-      "downloads": 47618388148,
-      "downloadsWeighted": 2174942621
+      "downloads": 47618629427,
+      "downloadsWeighted": 2174902299
      }
     }
    ]
@@ -1241,25 +1241,25 @@
      "sampled": 150,
      "active": 21
     },
-    "downloads": 2659363543,
-    "downloadsWeighted": 223829974,
+    "downloads": 2663646051,
+    "downloadsWeighted": 223589487,
     "loaders": {
      "forge": 1010,
      "fabric": 955,
-     "quilt": 501,
-     "neoforge": 343
+     "quilt": 502,
+     "neoforge": 344
     }
    },
    "cf": {
     "mods": 4531,
     "modpacks": 634,
-    "downloads": 36593378395,
-    "downloadsWeighted": 3494106733,
+    "downloads": 36593619674,
+    "downloadsWeighted": 3493698073,
     "loaders": {
-     "forge": 4149,
-     "fabric": 1678,
+     "forge": 4150,
+     "fabric": 1679,
      "quilt": 588,
-     "neoforge": 1411
+     "neoforge": 1412
     }
    },
    "versions": [
@@ -1273,8 +1273,8 @@
        "sampled": 59,
        "active": 12
       },
-      "downloads": 1190807365,
-      "downloadsWeighted": 24038400
+      "downloads": 1192858901,
+      "downloadsWeighted": 24047066
      },
      "cf": {
       "mods": 911,
@@ -1293,8 +1293,8 @@
        "sampled": 53,
        "active": 12
       },
-      "downloads": 1172949053,
-      "downloadsWeighted": 23823601
+      "downloads": 1174926024,
+      "downloadsWeighted": 23831165
      },
      "cf": {
       "mods": 847,
@@ -1313,8 +1313,8 @@
        "sampled": 64,
        "active": 12
       },
-      "downloads": 1409203448,
-      "downloadsWeighted": 28904408
+      "downloads": 1411595438,
+      "downloadsWeighted": 28920765
      },
      "cf": {
       "mods": 1097,
@@ -1333,8 +1333,8 @@
        "sampled": 67,
        "active": 12
       },
-      "downloads": 1567538878,
-      "downloadsWeighted": 32309630
+      "downloads": 1570148998,
+      "downloadsWeighted": 32330604
      },
      "cf": {
       "mods": 1154,
@@ -1353,14 +1353,14 @@
        "sampled": 149,
        "active": 21
       },
-      "downloads": 2657699281,
-      "downloadsWeighted": 69464409
+      "downloads": 2661977288,
+      "downloadsWeighted": 69539174
      },
      "cf": {
       "mods": 4380,
       "modpacks": 613,
-      "downloads": 36355706540,
-      "downloadsWeighted": 1506853254
+      "downloads": 36355947819,
+      "downloadsWeighted": 1506812932
      }
     }
    ]
@@ -1375,25 +1375,25 @@
      "sampled": 150,
      "active": 24
     },
-    "downloads": 845574155,
-    "downloadsWeighted": 57508542,
+    "downloads": 846892920,
+    "downloadsWeighted": 57395856,
     "loaders": {
      "forge": 461,
      "fabric": 396,
      "quilt": 323,
-     "neoforge": 254
+     "neoforge": 255
     }
    },
    "cf": {
     "mods": 878,
     "modpacks": 62,
-    "downloads": 11137477324,
-    "downloadsWeighted": 901631132,
+    "downloads": 11137491834,
+    "downloadsWeighted": 901632039,
     "loaders": {
-     "forge": 852,
-     "fabric": 414,
+     "forge": 853,
+     "fabric": 415,
      "quilt": 230,
-     "neoforge": 412
+     "neoforge": 413
     }
    },
    "versions": [
@@ -1407,8 +1407,8 @@
        "sampled": 69,
        "active": 16
       },
-      "downloads": 199029478,
-      "downloadsWeighted": 3216418
+      "downloads": 199349033,
+      "downloadsWeighted": 3209688
      },
      "cf": {
       "mods": 286,
@@ -1427,8 +1427,8 @@
        "sampled": 68,
        "active": 16
       },
-      "downloads": 119686330,
-      "downloadsWeighted": 1792116
+      "downloads": 119890054,
+      "downloadsWeighted": 1794997
      },
      "cf": {
       "mods": 228,
@@ -1447,14 +1447,14 @@
        "sampled": 150,
        "active": 24
       },
-      "downloads": 842566613,
-      "downloadsWeighted": 19054064
+      "downloads": 843881446,
+      "downloadsWeighted": 19070926
      },
      "cf": {
       "mods": 845,
       "modpacks": 59,
-      "downloads": 11020677111,
-      "downloadsWeighted": 358392902
+      "downloads": 11020691621,
+      "downloadsWeighted": 358393628
      }
     }
    ]
@@ -1463,31 +1463,31 @@
    "key": "1.12",
    "date": "2017-09-18",
    "mr": {
-    "mods": 2819,
+    "mods": 2821,
     "modpacks": 193,
     "activity": {
      "sampled": 150,
      "active": 26
     },
-    "downloads": 2684489260,
-    "downloadsWeighted": 266320916,
+    "downloads": 2688805731,
+    "downloadsWeighted": 266154774,
     "loaders": {
-     "forge": 2684,
+     "forge": 2686,
      "fabric": 167,
      "quilt": 65,
-     "neoforge": 84
+     "neoforge": 85
     }
    },
    "cf": {
     "mods": 14111,
     "modpacks": 24532,
-    "downloads": 55918860982,
-    "downloadsWeighted": 9903964842,
+    "downloads": 55919103274,
+    "downloadsWeighted": 9903556737,
     "loaders": {
-     "forge": 14252,
-     "fabric": 1353,
+     "forge": 14265,
+     "fabric": 1356,
      "quilt": 423,
-     "neoforge": 1811
+     "neoforge": 1814
     }
    },
    "versions": [
@@ -1501,54 +1501,54 @@
        "sampled": 56,
        "active": 13
       },
-      "downloads": 961578548,
-      "downloadsWeighted": 23024624
+      "downloads": 963063302,
+      "downloadsWeighted": 23059237
      },
      "cf": {
       "mods": 2745,
       "modpacks": 607,
-      "downloads": 34443535507,
-      "downloadsWeighted": 2142283084
+      "downloads": 34443550017,
+      "downloadsWeighted": 2142283809
      }
     },
     {
      "v": "1.12.1",
      "date": "2017-08-03",
      "mr": {
-      "mods": 457,
+      "mods": 458,
       "modpacks": 2,
       "activity": {
        "sampled": 54,
        "active": 13
       },
-      "downloads": 918676877,
-      "downloadsWeighted": 22782523
+      "downloads": 920105909,
+      "downloadsWeighted": 22816848
      },
      "cf": {
       "mods": 2448,
       "modpacks": 503,
-      "downloads": 33306445941,
-      "downloadsWeighted": 2054828658
+      "downloads": 33306460570,
+      "downloadsWeighted": 2054829407
      }
     },
     {
      "v": "1.12.2",
      "date": "2017-09-18",
      "mr": {
-      "mods": 2809,
+      "mods": 2810,
       "modpacks": 193,
       "activity": {
        "sampled": 149,
        "active": 26
       },
-      "downloads": 2675743346,
-      "downloadsWeighted": 115199580
+      "downloads": 2680048808,
+      "downloadsWeighted": 115315719
      },
      "cf": {
       "mods": 13895,
       "modpacks": 24320,
-      "downloads": 55870479910,
-      "downloadsWeighted": 6295408375
+      "downloads": 55870722177,
+      "downloadsWeighted": 6295368596
      }
     }
    ]
@@ -1563,25 +1563,25 @@
      "sampled": 150,
      "active": 19
     },
-    "downloads": 746646232,
-    "downloadsWeighted": 48960680,
+    "downloads": 747796812,
+    "downloadsWeighted": 49032948,
     "loaders": {
      "forge": 343,
      "fabric": 115,
      "quilt": 42,
-     "neoforge": 37
+     "neoforge": 38
     }
    },
    "cf": {
     "mods": 2495,
     "modpacks": 623,
-    "downloads": 32327660918,
-    "downloadsWeighted": 3791815566,
+    "downloads": 32327675428,
+    "downloadsWeighted": 3791816473,
     "loaders": {
-     "forge": 2472,
-     "fabric": 352,
+     "forge": 2473,
+     "fabric": 353,
      "quilt": 98,
-     "neoforge": 505
+     "neoforge": 506
     }
    },
    "versions": [
@@ -1595,8 +1595,8 @@
        "sampled": 72,
        "active": 13
       },
-      "downloads": 321057974,
-      "downloadsWeighted": 6285998
+      "downloads": 321554970,
+      "downloadsWeighted": 6295610
      },
      "cf": {
       "mods": 1121,
@@ -1615,8 +1615,8 @@
        "sampled": 39,
        "active": 13
       },
-      "downloads": 126464329,
-      "downloadsWeighted": 1798565
+      "downloads": 126680135,
+      "downloadsWeighted": 1801491
      },
      "cf": {
       "mods": 445,
@@ -1635,14 +1635,14 @@
        "sampled": 149,
        "active": 19
       },
-      "downloads": 743552416,
-      "downloadsWeighted": 19824854
+      "downloads": 744698985,
+      "downloadsWeighted": 19854486
      },
      "cf": {
       "mods": 2381,
       "modpacks": 595,
-      "downloads": 32175307205,
-      "downloadsWeighted": 2077215367
+      "downloads": 32175321715,
+      "downloadsWeighted": 2077216093
      }
     }
    ]
@@ -1657,25 +1657,25 @@
      "sampled": 148,
      "active": 20
     },
-    "downloads": 822656199,
-    "downloadsWeighted": 56944919,
+    "downloads": 823913048,
+    "downloadsWeighted": 57030127,
     "loaders": {
      "forge": 394,
      "fabric": 116,
      "quilt": 43,
-     "neoforge": 37
+     "neoforge": 38
     }
    },
    "cf": {
     "mods": 3033,
     "modpacks": 2447,
-    "downloads": 34325655315,
-    "downloadsWeighted": 4217464496,
+    "downloads": 34325669825,
+    "downloadsWeighted": 4217465403,
     "loaders": {
-     "forge": 3012,
-     "fabric": 343,
+     "forge": 3013,
+     "fabric": 344,
      "quilt": 92,
-     "neoforge": 514
+     "neoforge": 515
     }
    },
    "versions": [
@@ -1689,8 +1689,8 @@
        "sampled": 62,
        "active": 12
       },
-      "downloads": 370571316,
-      "downloadsWeighted": 7317021
+      "downloads": 371129897,
+      "downloadsWeighted": 7327783
      },
      "cf": {
       "mods": 1074,
@@ -1709,8 +1709,8 @@
        "sampled": 38,
        "active": 12
       },
-      "downloads": 126163954,
-      "downloadsWeighted": 1844468
+      "downloads": 126381175,
+      "downloadsWeighted": 1847481
      },
      "cf": {
       "mods": 496,
@@ -1729,14 +1729,14 @@
        "sampled": 148,
        "active": 20
       },
-      "downloads": 782941954,
-      "downloadsWeighted": 21756987
+      "downloads": 784148767,
+      "downloadsWeighted": 21789755
      },
      "cf": {
       "mods": 2994,
       "modpacks": 2422,
-      "downloads": 34206340927,
-      "downloadsWeighted": 2395243684
+      "downloads": 34206355437,
+      "downloadsWeighted": 2395244410
      }
     }
    ]
@@ -1751,25 +1751,25 @@
      "sampled": 150,
      "active": 26
     },
-    "downloads": 553006339,
-    "downloadsWeighted": 34601783,
+    "downloads": 553840222,
+    "downloadsWeighted": 34652298,
     "loaders": {
      "forge": 225,
      "fabric": 111,
      "quilt": 41,
-     "neoforge": 36
+     "neoforge": 37
     }
    },
    "cf": {
     "mods": 1632,
     "modpacks": 225,
-    "downloads": 18996668188,
-    "downloadsWeighted": 1926778239,
+    "downloads": 18996682698,
+    "downloadsWeighted": 1926779146,
     "loaders": {
-     "forge": 1609,
-     "fabric": 248,
+     "forge": 1610,
+     "fabric": 249,
      "quilt": 79,
-     "neoforge": 310
+     "neoforge": 311
     }
    },
    "versions": [
@@ -1783,8 +1783,8 @@
        "sampled": 94,
        "active": 19
       },
-      "downloads": 338948409,
-      "downloadsWeighted": 6654740
+      "downloads": 339466051,
+      "downloadsWeighted": 6664706
      },
      "cf": {
       "mods": 991,
@@ -1803,8 +1803,8 @@
        "sampled": 57,
        "active": 18
       },
-      "downloads": 117200563,
-      "downloadsWeighted": 1586623
+      "downloads": 117401849,
+      "downloadsWeighted": 1589249
      },
      "cf": {
       "mods": 200,
@@ -1823,8 +1823,8 @@
        "sampled": 57,
        "active": 18
       },
-      "downloads": 117199594,
-      "downloadsWeighted": 1586597
+      "downloads": 117400879,
+      "downloadsWeighted": 1589223
      },
      "cf": {
       "mods": 183,
@@ -1843,14 +1843,14 @@
        "sampled": 149,
        "active": 26
       },
-      "downloads": 549955105,
-      "downloadsWeighted": 13301051
+      "downloads": 550784991,
+      "downloadsWeighted": 13321052
      },
      "cf": {
       "mods": 1436,
       "modpacks": 126,
-      "downloads": 18859836932,
-      "downloadsWeighted": 957386986
+      "downloads": 18859851442,
+      "downloadsWeighted": 957387711
      }
     },
     {
@@ -1863,8 +1863,8 @@
        "sampled": 57,
        "active": 18
       },
-      "downloads": 117208490,
-      "downloadsWeighted": 1587487
+      "downloads": 117409790,
+      "downloadsWeighted": 1590114
      },
      "cf": {
       "mods": 177,
@@ -1879,31 +1879,31 @@
    "key": "1.8",
    "date": "2015-12-03",
    "mr": {
-    "mods": 864,
+    "mods": 865,
     "modpacks": 118,
     "activity": {
      "sampled": 150,
      "active": 21
     },
-    "downloads": 1244570959,
-    "downloadsWeighted": 108625753,
+    "downloads": 1246660539,
+    "downloadsWeighted": 108314230,
     "loaders": {
-     "forge": 699,
+     "forge": 700,
      "fabric": 145,
      "quilt": 42,
-     "neoforge": 40
+     "neoforge": 41
     }
    },
    "cf": {
     "mods": 2464,
-    "modpacks": 380,
-    "downloads": 18718082911,
-    "downloadsWeighted": 1888069800,
+    "modpacks": 381,
+    "downloads": 18718083151,
+    "downloadsWeighted": 1888069820,
     "loaders": {
-     "forge": 2433,
-     "fabric": 333,
+     "forge": 2438,
+     "fabric": 335,
      "quilt": 85,
-     "neoforge": 336
+     "neoforge": 338
     }
    },
    "versions": [
@@ -1917,8 +1917,8 @@
        "sampled": 35,
        "active": 5
       },
-      "downloads": 276278378,
-      "downloadsWeighted": 4928620
+      "downloads": 276691367,
+      "downloadsWeighted": 4935646
      },
      "cf": {
       "mods": 1216,
@@ -1937,8 +1937,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108461510,
-      "downloadsWeighted": 1468350
+      "downloads": 108643711,
+      "downloadsWeighted": 1470696
      },
      "cf": {
       "mods": 244,
@@ -1957,8 +1957,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108466725,
-      "downloadsWeighted": 1468476
+      "downloads": 108648992,
+      "downloadsWeighted": 1470824
      },
      "cf": {
       "mods": 231,
@@ -1977,8 +1977,8 @@
        "sampled": 20,
        "active": 5
       },
-      "downloads": 109127795,
-      "downloadsWeighted": 1477726
+      "downloads": 109310652,
+      "downloadsWeighted": 1480082
      },
      "cf": {
       "mods": 227,
@@ -1997,8 +1997,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108860862,
-      "downloadsWeighted": 1472492
+      "downloads": 109043389,
+      "downloadsWeighted": 1474842
      },
      "cf": {
       "mods": 217,
@@ -2017,8 +2017,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108860862,
-      "downloadsWeighted": 1472492
+      "downloads": 109043389,
+      "downloadsWeighted": 1474842
      },
      "cf": {
       "mods": 219,
@@ -2037,8 +2037,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108860862,
-      "downloadsWeighted": 1472492
+      "downloads": 109043389,
+      "downloadsWeighted": 1474842
      },
      "cf": {
       "mods": 219,
@@ -2057,8 +2057,8 @@
        "sampled": 19,
        "active": 5
       },
-      "downloads": 108860862,
-      "downloadsWeighted": 1472492
+      "downloads": 109043389,
+      "downloadsWeighted": 1474842
      },
      "cf": {
       "mods": 230,
@@ -2077,8 +2077,8 @@
        "sampled": 38,
        "active": 8
       },
-      "downloads": 614389453,
-      "downloadsWeighted": 13220486
+      "downloads": 615431969,
+      "downloadsWeighted": 13242914
      },
      "cf": {
       "mods": 555,
@@ -2091,20 +2091,20 @@
      "v": "1.8.9",
      "date": "2015-12-03",
      "mr": {
-      "mods": 849,
+      "mods": 850,
       "modpacks": 118,
       "activity": {
        "sampled": 145,
        "active": 21
       },
-      "downloads": 1171714878,
-      "downloadsWeighted": 43485195
+      "downloads": 1173680352,
+      "downloadsWeighted": 43509615
      },
      "cf": {
       "mods": 1907,
-      "modpacks": 306,
-      "downloads": 18042782848,
-      "downloadsWeighted": 899232803
+      "modpacks": 307,
+      "downloads": 18042783088,
+      "downloadsWeighted": 899232822
      }
     }
    ]
@@ -2113,31 +2113,31 @@
    "key": "1.7",
    "date": "2014-05-14",
    "mr": {
-    "mods": 977,
+    "mods": 978,
     "modpacks": 66,
     "activity": {
      "sampled": 150,
      "active": 25
     },
-    "downloads": 895245926,
-    "downloadsWeighted": 78303418,
+    "downloads": 896733274,
+    "downloadsWeighted": 78431173,
     "loaders": {
-     "forge": 860,
+     "forge": 861,
      "fabric": 105,
      "quilt": 40,
-     "neoforge": 33
+     "neoforge": 34
     }
    },
    "cf": {
     "mods": 5207,
     "modpacks": 5267,
-    "downloads": 23396184885,
-    "downloadsWeighted": 3290346578,
+    "downloads": 23396185080,
+    "downloadsWeighted": 3290346773,
     "loaders": {
-     "forge": 5193,
-     "fabric": 345,
+     "forge": 5191,
+     "fabric": 347,
      "quilt": 89,
-     "neoforge": 460
+     "neoforge": 462
     }
    },
    "versions": [
@@ -2151,8 +2151,8 @@
        "sampled": 27,
        "active": 2
       },
-      "downloads": 64716827,
-      "downloadsWeighted": 1087116
+      "downloads": 64822081,
+      "downloadsWeighted": 1088672
      },
      "cf": {
       "mods": 802,
@@ -2171,8 +2171,8 @@
        "sampled": 12,
        "active": 2
       },
-      "downloads": 30942957,
-      "downloadsWeighted": 371353
+      "downloads": 31001328,
+      "downloadsWeighted": 371971
      },
      "cf": {
       "mods": 61,
@@ -2191,8 +2191,8 @@
        "sampled": 15,
        "active": 2
       },
-      "downloads": 42512966,
-      "downloadsWeighted": 512687
+      "downloads": 42593636,
+      "downloadsWeighted": 513568
      },
      "cf": {
       "mods": 171,
@@ -2211,8 +2211,8 @@
        "sampled": 14,
        "active": 2
       },
-      "downloads": 42250930,
-      "downloadsWeighted": 507493
+      "downloads": 42331263,
+      "downloadsWeighted": 508367
      },
      "cf": {
       "mods": 154,
@@ -2231,8 +2231,8 @@
        "sampled": 13,
        "active": 2
       },
-      "downloads": 31342385,
-      "downloadsWeighted": 380495
+      "downloads": 31401024,
+      "downloadsWeighted": 381116
      },
      "cf": {
       "mods": 157,
@@ -2251,8 +2251,8 @@
        "sampled": 13,
        "active": 2
       },
-      "downloads": 31342385,
-      "downloadsWeighted": 380495
+      "downloads": 31401024,
+      "downloadsWeighted": 381116
      },
      "cf": {
       "mods": 152,
@@ -2271,8 +2271,8 @@
        "sampled": 13,
        "active": 2
       },
-      "downloads": 31342385,
-      "downloadsWeighted": 380495
+      "downloads": 31401024,
+      "downloadsWeighted": 381116
      },
      "cf": {
       "mods": 150,
@@ -2291,8 +2291,8 @@
        "sampled": 14,
        "active": 2
       },
-      "downloads": 42188679,
-      "downloadsWeighted": 506573
+      "downloads": 42268786,
+      "downloadsWeighted": 507444
      },
      "cf": {
       "mods": 165,
@@ -2305,20 +2305,20 @@
      "v": "1.7.10",
      "date": "2014-05-14",
      "mr": {
-      "mods": 967,
+      "mods": 968,
       "modpacks": 66,
       "activity": {
        "sampled": 150,
        "active": 25
       },
-      "downloads": 895205209,
-      "downloadsWeighted": 38211686
+      "downloads": 896692477,
+      "downloadsWeighted": 38270803
      },
      "cf": {
       "mods": 5061,
       "modpacks": 5257,
-      "downloads": 23377056432,
-      "downloadsWeighted": 2166017922
+      "downloads": 23377056627,
+      "downloadsWeighted": 2166018117
      }
     }
    ]
@@ -2331,10 +2331,10 @@
     "modpacks": 3,
     "activity": {
      "sampled": 150,
-     "active": 22
+     "active": 21
     },
-    "downloads": 124806969,
-    "downloadsWeighted": 7372128,
+    "downloads": 125027775,
+    "downloadsWeighted": 7383556,
     "loaders": {
      "forge": 124,
      "fabric": 81,
@@ -2365,8 +2365,8 @@
        "sampled": 72,
        "active": 14
       },
-      "downloads": 46404531,
-      "downloadsWeighted": 630117
+      "downloads": 46485081,
+      "downloadsWeighted": 631059
      },
      "cf": {
       "mods": 113,
@@ -2385,8 +2385,8 @@
        "sampled": 94,
        "active": 14
       },
-      "downloads": 47534422,
-      "downloadsWeighted": 702342
+      "downloads": 47616322,
+      "downloadsWeighted": 703370
      },
      "cf": {
       "mods": 410,
@@ -2403,10 +2403,10 @@
       "modpacks": 3,
       "activity": {
        "sampled": 149,
-       "active": 22
+       "active": 21
       },
-      "downloads": 124802772,
-      "downloadsWeighted": 3276310
+      "downloads": 125023570,
+      "downloadsWeighted": 3281701
      },
      "cf": {
       "mods": 829,
@@ -2427,8 +2427,8 @@
      "sampled": 150,
      "active": 23
     },
-    "downloads": 60758284,
-    "downloadsWeighted": 2839615,
+    "downloads": 60866623,
+    "downloadsWeighted": 2843338,
     "loaders": {
      "forge": 70,
      "fabric": 71,
@@ -2442,7 +2442,7 @@
     "downloads": 2981471282,
     "downloadsWeighted": 286536618,
     "loaders": {
-     "forge": 392,
+     "forge": 393,
      "fabric": 53,
      "quilt": 24,
      "neoforge": 46
@@ -2459,8 +2459,8 @@
        "sampled": 118,
        "active": 20
       },
-      "downloads": 29799729,
-      "downloadsWeighted": 413564
+      "downloads": 29864685,
+      "downloadsWeighted": 414316
      },
      "cf": {
       "mods": 134,
@@ -2479,8 +2479,8 @@
        "sampled": 149,
        "active": 23
       },
-      "downloads": 60751158,
-      "downloadsWeighted": 1091821
+      "downloads": 60859490,
+      "downloadsWeighted": 1093425
      },
      "cf": {
       "mods": 390,
@@ -2501,8 +2501,8 @@
      "sampled": 150,
      "active": 25
     },
-    "downloads": 64951342,
-    "downloadsWeighted": 3261201,
+    "downloads": 65059658,
+    "downloadsWeighted": 3265088,
     "loaders": {
      "forge": 75,
      "fabric": 70,
@@ -2533,8 +2533,8 @@
        "sampled": 109,
        "active": 21
       },
-      "downloads": 30096819,
-      "downloadsWeighted": 420310
+      "downloads": 30160664,
+      "downloadsWeighted": 421049
      },
      "cf": {
       "mods": 78,
@@ -2553,8 +2553,8 @@
        "sampled": 99,
        "active": 20
       },
-      "downloads": 16285405,
-      "downloadsWeighted": 201016
+      "downloads": 16324085,
+      "downloadsWeighted": 201389
      },
      "cf": {
       "mods": 57,
@@ -2573,8 +2573,8 @@
        "sampled": 118,
        "active": 20
       },
-      "downloads": 29985880,
-      "downloadsWeighted": 474286
+      "downloads": 30049394,
+      "downloadsWeighted": 475090
      },
      "cf": {
       "mods": 102,
@@ -2593,8 +2593,8 @@
        "sampled": 110,
        "active": 20
       },
-      "downloads": 19175488,
-      "downloadsWeighted": 349724
+      "downloads": 19217291,
+      "downloadsWeighted": 350258
      },
      "cf": {
       "mods": 63,
@@ -2613,8 +2613,8 @@
        "sampled": 146,
        "active": 25
       },
-      "downloads": 62733811,
-      "downloadsWeighted": 1155742
+      "downloads": 62839771,
+      "downloadsWeighted": 1157343
      },
      "cf": {
       "mods": 163,
@@ -2635,8 +2635,8 @@
      "sampled": 143,
      "active": 27
     },
-    "downloads": 58020597,
-    "downloadsWeighted": 2659169,
+    "downloads": 58125391,
+    "downloadsWeighted": 2662942,
     "loaders": {
      "forge": 51,
      "fabric": 69,
@@ -2667,8 +2667,8 @@
        "sampled": 110,
        "active": 24
       },
-      "downloads": 26881575,
-      "downloadsWeighted": 296814
+      "downloads": 26941763,
+      "downloadsWeighted": 297440
      },
      "cf": {
       "mods": 60,
@@ -2687,8 +2687,8 @@
        "sampled": 137,
        "active": 27
       },
-      "downloads": 57752328,
-      "downloadsWeighted": 943089
+      "downloads": 57856784,
+      "downloadsWeighted": 944598
      },
      "cf": {
       "mods": 85,
@@ -2709,8 +2709,8 @@
      "sampled": 142,
      "active": 29
     },
-    "downloads": 65539123,
-    "downloadsWeighted": 3837401,
+    "downloads": 65668848,
+    "downloadsWeighted": 3845828,
     "loaders": {
      "forge": 68,
      "fabric": 62,
@@ -2741,8 +2741,8 @@
        "sampled": 84,
        "active": 20
       },
-      "downloads": 14892137,
-      "downloadsWeighted": 150398
+      "downloads": 14929172,
+      "downloadsWeighted": 150784
      },
      "cf": {
       "mods": 37,
@@ -2761,8 +2761,8 @@
        "sampled": 85,
        "active": 19
       },
-      "downloads": 15049542,
-      "downloadsWeighted": 152845
+      "downloads": 15086774,
+      "downloadsWeighted": 153234
      },
      "cf": {
       "mods": 34,
@@ -2781,8 +2781,8 @@
        "sampled": 109,
        "active": 19
       },
-      "downloads": 26465229,
-      "downloadsWeighted": 339275
+      "downloads": 26524613,
+      "downloadsWeighted": 339977
      },
      "cf": {
       "mods": 45,
@@ -2801,8 +2801,8 @@
        "sampled": 94,
        "active": 21
       },
-      "downloads": 26302645,
-      "downloadsWeighted": 318400
+      "downloads": 26361786,
+      "downloadsWeighted": 319071
      },
      "cf": {
       "mods": 41,
@@ -2821,8 +2821,8 @@
        "sampled": 139,
        "active": 28
       },
-      "downloads": 65533717,
-      "downloadsWeighted": 1837521
+      "downloads": 65663429,
+      "downloadsWeighted": 1841792
      },
      "cf": {
       "mods": 96,
@@ -2843,8 +2843,8 @@
      "sampled": 118,
      "active": 22
     },
-    "downloads": 39295410,
-    "downloadsWeighted": 1685234,
+    "downloads": 39368369,
+    "downloadsWeighted": 1688332,
     "loaders": {
      "forge": 39,
      "fabric": 62,
@@ -2875,8 +2875,8 @@
        "sampled": 118,
        "active": 22
       },
-      "downloads": 39295410,
-      "downloadsWeighted": 605483
+      "downloads": 39368369,
+      "downloadsWeighted": 606517
      },
      "cf": {
       "mods": 62,
@@ -2897,8 +2897,8 @@
      "sampled": 113,
      "active": 21
     },
-    "downloads": 48693505,
-    "downloadsWeighted": 3037145,
+    "downloads": 48793930,
+    "downloadsWeighted": 3044203,
     "loaders": {
      "forge": 29,
      "fabric": 61,
@@ -2929,8 +2929,8 @@
        "sampled": 113,
        "active": 21
       },
-      "downloads": 48693505,
-      "downloadsWeighted": 1558530
+      "downloads": 48793930,
+      "downloadsWeighted": 1562348
      },
      "cf": {
       "mods": 61,
